@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "673709718349",
-    "project_id": "deefelzz",
-    "storage_bucket": "deefelzz.appspot.com"
+    "project_number": "1091481121627",
+    "project_id": "edoctor-913c3",
+    "storage_bucket": "edoctor-913c3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:673709718349:android:cceaf51454801dbde99504",
+        "mobilesdk_app_id": "1:1091481121627:android:0fdab1873efc496d25207e",
         "android_client_info": {
-          "package_name": "com.Deefilz"
+          "package_name": "com.Edoctor"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB0RW2_Y7_GIovR1nMpNm2rCfrHu_tNtBU"
+          "current_key": "AIzaSyAJRIMEFU1AdXEALd2JPjI3iNI-XdCk-jA"
         }
       ],
       "services": {

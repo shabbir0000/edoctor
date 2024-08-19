@@ -7,7 +7,7 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image resizeMode='contain' source={require('../../Images/deefelz.png')} style={styles.logo} />
-      <Text style={styles.title}>Dee-Filz</Text>
+      <Text style={styles.title}>E-Doctor</Text>
       <Text style={styles.subtitle}>Let's get started!</Text>
       <Text style={styles.description}>Login to enjoy the features we’ve provided, and stay healthy!</Text>
       

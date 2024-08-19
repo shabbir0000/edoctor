@@ -1,4 +1,4 @@
-package com.Deefilz
+package com.Edoctor
 import android.os.Bundle;
 import android.app.Application
 import com.facebook.react.PackageList
