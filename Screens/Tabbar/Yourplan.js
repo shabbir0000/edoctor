@@ -6,8 +6,9 @@ import Toast from 'react-native-toast-message';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Screensheader from '../Universal/Screensheader';
-import { collection, deleteDoc, doc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../Firebase';
+import Share from 'react-native-share';
 // import LinearGradient from 'react-native-linear-gradient'
 
 const Yourplan = ({ navigation }) => {
@@ -18,16 +19,13 @@ const Yourplan = ({ navigation }) => {
     const [price, setprice] = useState("");
     const [cat, setcat] = useState("All Doc")
 
-    const [userflag, setuserflag] = useState(true);
+    const [userflag, setuserflag] = useState("");
 
     useEffect(() => {
         AsyncStorage.getItem("role").then((role) => {
-            if (role === "user") {
-                setuserflag(true)
-            }
-            else {
-                setuserflag(false)
-            }
+
+            setuserflag(role)
+
         })
     }, [])
 
@@ -37,10 +35,10 @@ const Yourplan = ({ navigation }) => {
     useEffect(() => {
 
         AsyncStorage.getItem("email").then((email) => {
-            const coll = collection(db, 'Doctors');
-            // const q = query(coll, where('email', '==', email));
+            const coll = collection(db, 'Profile');
+            const q = query(coll, where('ownemail', '==', email),where('role', '==', "doctor"));
 
-            const unSubscribe = onSnapshot(coll, snapshot => {
+            const unSubscribe = onSnapshot(q, snapshot => {
                 setGetData(
                     snapshot.docs.map(doc => ({
                         selecteduser: doc.data(),
@@ -59,35 +57,39 @@ const Yourplan = ({ navigation }) => {
 
 
     const getdatabycat = async (cat) => {
-        const coll = collection(db, 'Doctors');
-        const q = query(coll, where('doctortypelabel', '==', cat));
+        AsyncStorage.getItem("email").then((email) => {
+            const coll = collection(db, 'Profile');
+            const q = query(coll, where('ownemail', '==', email), where('doctortypelabel', '==', cat));
 
-        const unSubscribe = onSnapshot(q, snapshot => {
-            setGetData(
-                snapshot.docs.map(doc => ({
-                    selecteduser: doc.data(),
-                })),
-            );
-        });
-        return () => {
-            unSubscribe();
-        };
+            const unSubscribe = onSnapshot(q, snapshot => {
+                setGetData(
+                    snapshot.docs.map(doc => ({
+                        selecteduser: doc.data(),
+                    })),
+                );
+            });
+            return () => {
+                unSubscribe();
+            };
+        })
     }
 
     const getalldata = async () => {
-        const coll = collection(db, 'Doctors');
-        // const q = query(coll, where('doctortypelabel', '==', cat));
-
-        const unSubscribe = onSnapshot(coll, snapshot => {
-            setGetData(
-                snapshot.docs.map(doc => ({
-                    selecteduser: doc.data(),
-                })),
-            );
-        });
-        return () => {
-            unSubscribe();
-        };
+        AsyncStorage.getItem("email").then((email) => {
+            const coll = collection(db, 'Profile');
+            // const q = query(coll, where('doctortypelabel', '==', cat));
+            const q = query(coll, where('ownemail', '==', email));
+            const unSubscribe = onSnapshot(q, snapshot => {
+                setGetData(
+                    snapshot.docs.map(doc => ({
+                        selecteduser: doc.data(),
+                    })),
+                );
+            });
+            return () => {
+                unSubscribe();
+            };
+        })
     }
 
     const vrImages = [
@@ -109,18 +111,40 @@ const Yourplan = ({ navigation }) => {
     ];
 
 
-    const deletedoc = async (docId) => {
-        deleteDoc(doc(db, 'Doctors', docId))
+    const updatedoc = async (docid, status) => {
+        // const slots =  calculateSessionSlots(label,label1,45)
+        updateDoc(doc(db, 'Profile', docid), {
+            profilestatus: status
+        })
             .then(() => {
-                // setLoading(false);
-                console.log('delete done');
+                console.log('done');
+                // setloading(false);
+                Alert.alert('Congratulation', `User Has Been Send TO ${status} Mode`, [
+                    { text: 'OK' },
+                ]);
             })
             .catch(error => {
-                // setLoading(false);
-                Alert.alert('Error:', error.message);
+                // setloading(false);
+                Alert.alert('this :', error.message);
             });
     };
 
+
+    const shareUserCredentials = (name, email, password, role) => {
+
+        const message = `Hello ${name},\nyour email is\n${email}\nand your password is\n${password}.\nand your Role is\n${role}`;
+
+        const options = {
+            title: 'Share User Credentials',
+            message: message,
+        };
+
+        Share.open(options)
+            .then((res) => console.log(res))
+            .catch((err) => {
+                if (err) console.log(err);
+            });
+    };
 
 
 
@@ -128,7 +152,7 @@ const Yourplan = ({ navigation }) => {
     return (
         <>
             {
-                userflag ?
+                userflag === "user" ?
                     <View style={tw` bg-white flex-1`}>
                         <Screensheader
                             name={'SEARCH DOCTOR'}
@@ -194,7 +218,7 @@ const Yourplan = ({ navigation }) => {
                                                 navigation.navigate("Showappoinments", {
                                                     phone: data.selecteduser.doctorphone,
                                                     slots: data.selecteduser.slots,
-                                                    usercontrol : true
+                                                    usercontrol: true
                                                     // filledapp: allSlots
                                                 })
                                             }}
@@ -324,31 +348,31 @@ const Yourplan = ({ navigation }) => {
                                     <>
                                         <TouchableOpacity
                                             key={index}
-                                            onPress={() => {
-                                                navigation.navigate("Showappoinments", {
-                                                    phone: data.selecteduser.doctorphone,
-                                                    slots: data.selecteduser.slots,
-                                                    usercontrol : false,
-                                                })
-                                            }}
+                                        onPress={() => {
+                                            navigation.navigate("Showappoinments", {
+                                                phone: data.selecteduser.phone,
+                                                slots: data.selecteduser.slots,
+                                                usercontrol : false,
+                                            })
+                                        }}
                                         >
                                             <View style={[tw`border flex-row justify-around items-center w-80 h-45 rounded-md self-center mt-5`, { borderColor: "#00B1E7" }]}>
                                                 <View style={tw`h-40  w-30`}>
                                                     <Image
                                                         style={tw`h-40 w-35`}
                                                         resizeMode='cover'
-                                                        source={{ uri: data.selecteduser.profile }}
+                                                        source={{ uri: data.selecteduser.profilephoto }}
                                                     />
                                                 </View>
                                                 <View style={tw`h-40 justify-center w-35 `}>
-                                                    <Text numberOfLines={1} style={tw`font-bold w-40 text-xl`}>{data.selecteduser.doctorname}</Text>
+                                                    <Text numberOfLines={1} style={tw`font-bold w-40 text-xl`}>{data.selecteduser.fullname.toUpperCase()}</Text>
                                                     <Text numberOfLines={1} style={tw`font-light mt-1 w-40 text-gray-400 text-sm`}>{data.selecteduser.doctortypelabel}</Text>
-                                                    <Text numberOfLines={1} style={tw`font-light mt-1 w-40  text-base`}>{data.selecteduser.doctorphone}</Text>
-                                                    <View style={tw` items-center h-10 w-30 justify-between flex-row mt-2`}>
+                                                    <Text numberOfLines={1} style={tw`font-light mt-1 w-40  text-base`}>{data.selecteduser.profilestatus.toUpperCase()}</Text>
+                                                    <View style={tw` items-center h-10 w-35 justify-between flex-row mt-2`}>
 
                                                         <TouchableOpacity
                                                             onPress={() => (
-                                                                Linking.openURL(`whatsapp://send?text=Hello\nI Have Query&phone=${data.selecteduser.doctorphone}`)
+                                                                Linking.openURL(`whatsapp://send?text=Hello\nI Have Query&phone=${data.selecteduser.phone}`)
                                                             )}
                                                         >
                                                             <Image
@@ -362,9 +386,12 @@ const Yourplan = ({ navigation }) => {
                                                         <TouchableOpacity
                                                             onPress={() => {
                                                                 navigation.navigate("Sessions", {
-                                                                    doctorname: data.selecteduser.doctorname,
+                                                                    doctorname: data.selecteduser.fullname,
                                                                     doctortype: data.selecteduser.doctortype,
-                                                                    doctorphone: data.selecteduser.doctorphone,
+                                                                    doctorphone: data.selecteduser.phone,
+                                                                    doctoremail: data.selecteduser.email,
+                                                                    doctorpassword: data.selecteduser.password,
+                                                                    doctorcity: data.selecteduser.city,
                                                                     mondayy: data.selecteduser.monday,
                                                                     tuesdayy: data.selecteduser.tuesday,
                                                                     wednesdayy: data.selecteduser.wednesday,
@@ -375,10 +402,11 @@ const Yourplan = ({ navigation }) => {
                                                                     docid: data.selecteduser.userid,
                                                                     doctortimefrom: data.selecteduser.doctortimefrom,
                                                                     doctortimeto: data.selecteduser.doctortimeto,
-                                                                    profile: data.selecteduser.profile,
+                                                                    profile: data.selecteduser.profilephoto,
                                                                     labell: data.selecteduser.doctortimefromlabel,
                                                                     labell1: data.selecteduser.doctortimetolabel,
-                                                                    labell2: data.selecteduser.doctortypelabel
+                                                                    labell2: data.selecteduser.doctortypelabel,
+                                                                    profilestatus: data.selecteduser.profilestatus
                                                                 })
                                                             }}
                                                         >
@@ -391,13 +419,13 @@ const Yourplan = ({ navigation }) => {
 
                                                         <TouchableOpacity
                                                             onPress={() => {
-                                                                Alert.alert('Alert', 'Are You Sure You Want To Delete', [
+                                                                Alert.alert('Alert', `You Want TO Send This On ${data.selecteduser.profilestatus === "pending" ? "active" : "pending"} Mode?`, [
                                                                     {
                                                                         text: 'No',
                                                                         onPress: () => console.log('Cancel Pressed'),
                                                                         style: 'cancel',
                                                                     },
-                                                                    { text: 'YES', onPress: () => deletedoc(data.selecteduser.userid) },
+                                                                    { text: 'YES', onPress: () => updatedoc(data.selecteduser.userid, data.selecteduser.profilestatus === "pending" ? "active" : "pending") },
                                                                 ]);
 
                                                             }}
@@ -405,13 +433,27 @@ const Yourplan = ({ navigation }) => {
                                                             <Image
                                                                 style={tw`h-6 w-6`}
                                                                 resizeMode='cover'
-                                                                source={require("../../Images/delete.png")}
+                                                                source={require("../../Images/status-quo.png")}
+                                                            />
+                                                        </TouchableOpacity>
+
+
+                                                        <TouchableOpacity
+                                                            onPress={() => {
+                                                                shareUserCredentials(data.selecteduser.fullname, data.selecteduser.email, data.selecteduser.password, data.selecteduser.role)
+
+                                                            }}
+                                                        >
+                                                            <Image
+                                                                style={tw`h-6 w-6`}
+                                                                resizeMode='cover'
+                                                                source={require("../../Images/send.png")}
                                                             />
                                                         </TouchableOpacity>
 
                                                     </View>
 
-                                                    <TouchableOpacity
+                                                    {/* <TouchableOpacity
                                                         onPress={() => {
                                                             navigation.navigate("Showappoinments", {
                                                                 phone: data.selecteduser.doctorphone,
@@ -421,7 +463,7 @@ const Yourplan = ({ navigation }) => {
                                                         }}
                                                     >
                                                         <Text numberOfLines={1} style={tw`font-light mt-1 w-40 text-black underline text-base`}>Fill The Own Slots</Text>
-                                                    </TouchableOpacity>
+                                                    </TouchableOpacity> */}
                                                 </View>
                                             </View>
                                         </TouchableOpacity>

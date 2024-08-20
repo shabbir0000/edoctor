@@ -14,6 +14,7 @@ import PP from './PP';
 import Updateprofile from '../../Components/Profile/Updateprofile';
 import Showvideo from '../../Components/Session/Showvideo';
 import Showappoinments from '../../Components/Session/Showappoinments';
+import Addupdatesubadmin from '../../Components/Adminscreen/Addupdatesubadmin';
 
 // import Home from '../Bottomtabs/Home';
 // import Tabbar from './Tabbar';
@@ -55,6 +56,7 @@ function Navigation() {
         <Stack.Screen name='Subsplan' component={Subplan} />
         <Stack.Screen name='Showvideo' component={Showvideo} />
         <Stack.Screen name='Showappoinments' component={Showappoinments} />
+        <Stack.Screen name='Addupdatesubadmin' component={Addupdatesubadmin} />
         {/* <Stack.Screen name="Viewcatproduct" component={Viewcatproduct} /> */}
         {/* <Stack.Screen options={{
            cardStyle: { backgroundColor: '#fffff' }

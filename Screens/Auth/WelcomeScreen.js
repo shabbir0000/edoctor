@@ -7,8 +7,8 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image resizeMode='contain' source={require('../../Images/deefelz.png')} style={styles.logo} />
-      <Text style={styles.title}>E-Doctor</Text>
-      <Text style={styles.subtitle}>Let's get started!</Text>
+      {/* <Text style={styles.title}>E-Doctor</Text> */}
+      <Text style={styles.subtitle}>Checkup Asaan Banao</Text>
       <Text style={styles.description}>Login to enjoy the features we’ve provided, and stay healthy!</Text>
       
       <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
@@ -31,8 +31,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logo: {
-    width: 200,
-    height: 200,
+    width: 300,
+    height: 300,
     marginBottom: 20,
   },
   title: {

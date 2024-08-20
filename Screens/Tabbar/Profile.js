@@ -30,6 +30,8 @@ const Profile = ({ navigation }) => {
     })
   }, []);
 
+  
+
   const [name, setname] = useState("");
   const [fname, setfname] = useState("");
   const [lname, setlname] = useState("");

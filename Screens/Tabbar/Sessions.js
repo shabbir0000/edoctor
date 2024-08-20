@@ -17,7 +17,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import * as Yup from 'yup';
 import Screensheader from '../../Screens/Universal//Screensheader';
 import storage from '@react-native-firebase/storage';
-import { ref1, app, db } from '../../Firebase';
+import { ref1, app, db, auth } from '../../Firebase';
 import {
     collection,
     deleteDoc,
@@ -32,7 +32,7 @@ import {
 
 import FilePicker from 'react-native-document-picker';
 import uuid from 'react-native-uuid';
-import { getAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { Buttonnormal } from '../../Screens/Universal/Buttons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -45,6 +45,9 @@ const Sessions = ({ navigation, route }) => {
         doctorname,
         doctortype,
         doctorphone,
+        doctoremail,
+        doctorpassword,
+        doctorcity,
         mondayy,
         tuesdayy,
         wednesdayy,
@@ -58,12 +61,16 @@ const Sessions = ({ navigation, route }) => {
         profile,
         labell,
         labell1,
-        labell2
+        labell2,
+        profilestatus
     } = route.params;
 
     const [initialValues, setInitialValues] = useState({
         doctorname: '',
         doctorphone: '',
+        doctoremail: '',
+        doctorpassword: '',
+        doctorcity: '',
     });
 
     const [loading, setloading] = useState(false);
@@ -174,12 +181,9 @@ const Sessions = ({ navigation, route }) => {
             });
 
             AsyncStorage.getItem("role").then((role) => {
-                if (role === "user") {
-                    setuserflag(true)
-                }
-                else {
-                    setuserflag(false)
-                }
+
+                setuserflag(role)
+
             })
 
             return () => {
@@ -237,6 +241,9 @@ const Sessions = ({ navigation, route }) => {
         setInitialValues({
             doctorname: doctorname,
             doctorphone: doctorphone,
+            doctoremail: doctoremail,
+            doctorpassword: doctorpassword,
+            doctorcity: doctorcity,
         });
         setmonday(mondayy)
         settuesday(tuesdayy)
@@ -258,6 +265,9 @@ const Sessions = ({ navigation, route }) => {
             setInitialValues({
                 doctorname: '',
                 doctorphone: '',
+                doctoremail: '',
+                doctorpassword: '',
+                doctorcity: '',
             });
             setmonday(false)
             settuesday(false)
@@ -305,41 +315,41 @@ const Sessions = ({ navigation, route }) => {
 
     const calculateSessionSlots = (startTime, endTime, sessionDuration) => {
         const convertTo24HourFormat = (time) => {
-          const [timePart, modifier] = time.split(' ');
-          let [hours, minutes] = timePart.split(':');
-      
-          if (hours === '12') {
-            hours = '00';
-          }
-      
-          if (modifier === 'PM' && hours !== '12') {
-            hours = parseInt(hours, 10) + 12;
-          }
-      
-          return `${String(hours).padStart(2, '0')}:${minutes}`;
+            const [timePart, modifier] = time.split(' ');
+            let [hours, minutes] = timePart.split(':');
+
+            if (hours === '12') {
+                hours = '00';
+            }
+
+            if (modifier === 'PM' && hours !== '12') {
+                hours = parseInt(hours, 10) + 12;
+            }
+
+            return `${String(hours).padStart(2, '0')}:${minutes}`;
         };
-      
+
         const slots = [];
         let start = new Date(`1970-01-01T${convertTo24HourFormat(startTime)}:00`);
         let end = new Date(`1970-01-01T${convertTo24HourFormat(endTime)}:00`);
         const sessionInMs = sessionDuration * 60 * 1000;
-      
+
         while (start.getTime() + sessionInMs <= end.getTime()) {
-          const endSession = new Date(start.getTime() + sessionInMs);
-          slots.push({
-            start: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
-            end: endSession.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
-          });
-          start = endSession;
+            const endSession = new Date(start.getTime() + sessionInMs);
+            slots.push({
+                start: start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
+                end: endSession.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
+            });
+            start = endSession;
         }
-      
+
         return slots;
-      };
+    };
 
 
-    const uploaddocfile = async (doctorname, doctorphone) => {
+    const uploaddocfile = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity) => {
         console.log("data :", doctorname, doctorphone, value, value1, value2, imglink1);
-        if (!doctorname || !doctorphone || !value || !value1 || !value2 || !imglink1) {
+        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword || !doctorcity || !value || !value1 || !value2 || !imglink1) {
             Alert.alert('Alert', 'Please Fill All The Detail');
 
         }
@@ -349,21 +359,26 @@ const Sessions = ({ navigation, route }) => {
             await reference.putFile(imglink1);
             const url = await storage().ref(`allfiles/${name1}`).getDownloadURL();
             console.log('your file is locating :', url);
-            adddoc(doctorname, doctorphone, url);
+            adddoc(doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, url);
         }
     };
 
-    const adddoc = async (doctorname, doctorphone, url) => {
-        if (!doctorname || !doctorphone || !value || !value1 || !value2) {
+    const adddoc = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, url) => {
+        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword || !doctorcity || !value || !value1 || !value2) {
             showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
         }
 
         else {
 
-            const slots =  calculateSessionSlots(label,label1,45)
-            setDoc(doc(db, 'Doctors', userid), {
-                doctorname: doctorname,
-                doctorphone: doctorphone,
+            const slots = calculateSessionSlots(label, label1, 20)
+            await createUserWithEmailAndPassword(auth, doctoremail, doctorpassword);
+            setDoc(doc(db, 'Signup', userid), {
+                fullname: doctorname,
+                phone: doctorphone,
+                email: doctoremail.toLowerCase().trim(),
+                city: doctorcity.toLowerCase().trim(),
+                password: doctorpassword,
+                ownemail: user,
                 doctortype: value2,
                 doctortypelabel: label2,
                 monday: monday,
@@ -377,33 +392,64 @@ const Sessions = ({ navigation, route }) => {
                 doctortimefromlabel: label,
                 doctortimeto: value1,
                 doctortimetolabel: label1,
-                slots : slots,
+                role: "doctor",
+                profilestatus: "active",
+                slots: slots,
                 userid,
                 timestamp: serverTimestamp(),
-                profile: url
+                profilephoto: url
             })
                 .then(() => {
-                    console.log('done');
-                    //  setfiledata1(null)
-                   
-                    setmonday(false)
-                    settuesday(false)
-                    setwednesday(false)
-                    setthursday(false)
-                    setfriday(false)
-                    setsaturday(false)
-                    setsunday(false)
-                    setValue("")
-                    setValue1("")
-                    setValue2("")
 
-                    setloading(false)
-                    Alert.alert('Congratulation', 'Doctor Has Been Register', [
-                        {
-                            text: 'OK',
-                            onPress: () => navigation.navigate('Home'),
-                        },
-                    ]);
+                    setDoc(doc(db, 'Profile', userid), {
+                        fullname: doctorname,
+                        phone: doctorphone,
+                        email: doctoremail.toLowerCase().trim(),
+                        city: doctorcity.toLowerCase().trim(),
+                        password: doctorpassword,
+                        ownemail: user,
+                        doctortype: value2,
+                        doctortypelabel: label2,
+                        monday: monday,
+                        tuesday: tuesday,
+                        wednesday: wednesday,
+                        thursday: thursday,
+                        friday: friday,
+                        saturday: saturday,
+                        sunday: sunday,
+                        doctortimefrom: value,
+                        doctortimefromlabel: label,
+                        doctortimeto: value1,
+                        doctortimetolabel: label1,
+                        role: "doctor",
+                        profilestatus: "active",
+                        slots: slots,
+                        userid,
+                        timestamp: serverTimestamp(),
+                        profilephoto: url
+                    }).then(() => {
+                        console.log('done');
+                        //  setfiledata1(null)
+
+                        setmonday(false)
+                        settuesday(false)
+                        setwednesday(false)
+                        setthursday(false)
+                        setfriday(false)
+                        setsaturday(false)
+                        setsunday(false)
+                        setValue("")
+                        setValue1("")
+                        setValue2("")
+
+                        setloading(false)
+                        Alert.alert('Congratulation', 'Doctor Has Been Register', [
+                            {
+                                text: 'OK',
+                                onPress: () => navigation.navigate('Home'),
+                            },
+                        ]);
+                    })
                 })
                 .catch(error => {
                     setloading(false)
@@ -415,7 +461,7 @@ const Sessions = ({ navigation, route }) => {
     };
 
 
-    const updatedocfile = async (doctorname, doctorphone) => {
+    const updatedocfile = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity) => {
         if (filedata1.startsWith('file://') || filedata1.startsWith('content://')) {
             // showModal;
             setloading(true);
@@ -423,12 +469,12 @@ const Sessions = ({ navigation, route }) => {
             await reference.putFile(imglink1);
             const url = await storage().ref(`allfiles/${name1}`).getDownloadURL();
             console.log('your file is locating :', url);
-            updatedoc(doctorname, doctorphone, url);
+            updatedoc(doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, url);
         }
         else {
             try {
                 setloading(true);
-                updatedoc(doctorname, doctorphone, filedata1);
+                updatedoc(doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, filedata1);
             }
             catch (error) {
                 setloading(false);
@@ -437,11 +483,15 @@ const Sessions = ({ navigation, route }) => {
         }
     };
 
-    const updatedoc = async (doctorname, doctorphone, url) => {
-        const slots =  calculateSessionSlots(label,label1,45)
-        updateDoc(doc(db, 'Doctors', docid), {
-            doctorname: doctorname,
-            doctorphone: doctorphone,
+    const updatedoc = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, url) => {
+        const slots = calculateSessionSlots(label, label1, 20)
+        updateDoc(doc(db, 'Profile', docid), {
+            fullname: doctorname,
+            phone: doctorphone,
+            email: doctoremail.toLowerCase().trim(),
+            city: doctorcity.toLowerCase().trim(),
+            password: doctorpassword,
+            ownemail: user,
             doctortype: value2,
             doctortypelabel: label2,
             monday: monday,
@@ -455,9 +505,11 @@ const Sessions = ({ navigation, route }) => {
             doctortimefromlabel: label,
             doctortimeto: value1,
             doctortimetolabel: label1,
+            role: "doctor",
+            profilestatus: profilestatus,
             userid: docid,
-            slots:slots,
-            profile: url,
+            slots: slots,
+            profilephoto: url,
             timestamp: serverTimestamp(),
         })
             .then(() => {
@@ -499,7 +551,7 @@ const Sessions = ({ navigation, route }) => {
                     :
                     <>
                         {
-                            userflag ?
+                            userflag === "user" ?
                                 <>
                                     <View style={tw` bg-white flex-1`}>
                                         <Screensheader
@@ -616,12 +668,18 @@ const Sessions = ({ navigation, route }) => {
                                                     if (docid) {
                                                         updatedocfile(
                                                             values.doctorname,
-                                                            values.doctorphone
+                                                            values.doctorphone,
+                                                            values.doctoremail,
+                                                            values.doctorpassword,
+                                                            values.doctorcity,
                                                         )
                                                     } else {
                                                         uploaddocfile(
                                                             values.doctorname,
-                                                            values.doctorphone
+                                                            values.doctorphone,
+                                                            values.doctoremail,
+                                                            values.doctorpassword,
+                                                            values.doctorcity,
                                                         )
                                                     }
                                                     // resetForm({})
@@ -639,7 +697,7 @@ const Sessions = ({ navigation, route }) => {
                                                 }) => (
                                                     <SafeAreaView>
                                                         <ScrollView vertical showsVerticalScrollIndicator={true}>
-                                                            <View style={tw`h-220`}>
+                                                            <View style={tw`h-${docid ? "250" : "260"}`}>
                                                                 <Screensheader
                                                                     name={'ADD DOCTOR'}
                                                                     left={15}
@@ -684,6 +742,42 @@ const Sessions = ({ navigation, route }) => {
                                                                         />
                                                                     </View>
 
+                                                                    <View style={tw`top-5`}>
+                                                                        <Input1
+                                                                            placeholder="Add Doctor Email"
+                                                                            onchangetext={handleChange('doctoremail')}
+                                                                            onblur={handleBlur('doctoremail')}
+                                                                            value={values.doctoremail}
+                                                                            error={touched.doctoremail ? errors.doctoremail : false}
+                                                                        />
+                                                                    </View>
+
+                                                                    {
+                                                                        docid ?
+                                                                            <></>
+                                                                            :
+                                                                            <View style={tw`top-5`}>
+                                                                                <Input1
+                                                                                    placeholder="Add Doctor Password"
+                                                                                    onchangetext={handleChange('doctorpassword')}
+                                                                                    onblur={handleBlur('doctorpassword')}
+                                                                                    value={values.doctorpassword}
+                                                                                    error={touched.doctorpassword ? errors.doctorpassword : false}
+                                                                                />
+                                                                            </View>
+                                                                    }
+
+
+                                                                    <View style={tw`top-5`}>
+                                                                        <Input1
+                                                                            placeholder="Add Doctor City"
+                                                                            onchangetext={handleChange('doctorcity')}
+                                                                            onblur={handleBlur('doctorcity')}
+                                                                            value={values.doctorcity}
+                                                                            error={touched.doctorcity ? errors.doctorcity : false}
+                                                                        />
+                                                                    </View>
+
 
                                                                     <View style={tw`top-8`}>
                                                                         <Text style={tw`text-gray-400 `}>Select Doctor Type</Text>
@@ -697,7 +791,7 @@ const Sessions = ({ navigation, route }) => {
                                                                             maxHeight={300}
                                                                             labelField="label"
                                                                             valueField="value"
-                                                                            placeholder={'Select Doctor Typpe'}
+                                                                            placeholder={'Select Doctor Type'}
                                                                             mode='modal'
 
                                                                             value={value2}

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import tw from "twrnc"
 import { Input, showToast } from '../Universal/Input'
@@ -25,6 +25,7 @@ const Signup = ({ navigation }) => {
   const [name, setname] = useState("")
   const [email, setemail] = useState("")
   const [phone, setphone] = useState("")
+  const [city, setcity] = useState("")
   const [password, setpassword] = useState("")
   const userid = uuid.v4();
 
@@ -42,9 +43,10 @@ const Signup = ({ navigation }) => {
 
           setDoc(doc(db, 'Signup', userid), {
             fullname: name,
-            phone : phone,
+            phone: phone,
             role: 'user',
-            email: email.toLowerCase(),
+            city: city.toLowerCase().trim(),
+            email: email.toLowerCase().trim(),
             password,
             userid,
             timestamp: serverTimestamp(),
@@ -54,8 +56,9 @@ const Signup = ({ navigation }) => {
 
               setDoc(doc(db, 'Profile', userid), {
                 fullname: name,
-                phone : phone,
-                email: email.toLowerCase(),
+                phone: phone,
+                city: city.toLowerCase().trim(),
+                email: email.toLowerCase().trim(),
                 profilephoto: '',
                 role: 'user',
                 userid,
@@ -63,6 +66,12 @@ const Signup = ({ navigation }) => {
               })
                 .then(() => {
                   setloading(false)
+                  setemail("")
+                  setpassword("");
+                  setname("");
+                  setphone("");
+                  setcity("");
+                  
                   Alert.alert('Congratulation', 'User Has Been Register', [
                     {
                       text: 'OK',
@@ -103,92 +112,102 @@ const Signup = ({ navigation }) => {
           )}
         />
         <View style={tw`items-center`}>
-          <View style={tw`w-80 h-20 items-center justify-center mt-5`}>
-            <Text style={[tw`text-3xl font-bold text-gray-400`, { color: '#00B1E7' }]}>
-              Great
-            </Text>
-            <Text style={[tw`text-sm font-normal text-gray-400`, { color: '#00B1E7' }]}>
-              Sign Up To Create Your Account
-            </Text>
-          </View>
-
-          <Input
-            onchangetext={setname}
-            source={require("../../Images/user.png")}
-            placeholder={"Your Full Name"}
-          />
-
-          <Input
-            onchangetext={setphone}
-            entry={true}
-            source={require("../../Images/smartphone.png")}
-            placeholder={"Enter Your Phone Number"}
-          />
-
-
-          <Input
-            onchangetext={setemail}
-            source={require("../../Images/mail.png")}
-            placeholder={"Enter Your Email"}
-          />
-
-          <Input
-            onchangetext={setpassword}
-            entry={true}
-            source={require("../../Images/padlock.png")}
-            placeholder={"Enter Your Password"}
-          />
-
-
-          <View style={tw` justify-start  items-center flex-row w-80 h-12 mt-5`}>
-            <View style={tw` flex-row items-center justify-center w-80 h-10  `}>
-              <CheckBox
-                disabled={false}
-                value={toggleCheckBox}
-                onValueChange={(newValue) => setToggleCheckBox(newValue)}
-              />
-              <Text style={tw`text-gray-400 `}>By Checking The Box You Agree Our Term And Condition</Text>
-            </View>
-
-          </View>
-
-          {
-            loading ?
-              <ActivityIndicator size={'large'} color={'#199A8E'} />
-              :
-              <View style={tw` justify-between w-80 h-15 mt-5 `}>
-                <Buttonnormal
-                  onPress={() => {
-                    // navigation.navigate('Tabbar')
-                    Signinwithemailandpass()
-                  }}
-                  c1={'#0B4064'}
-                  c2={'#0B4064'}
-                  style={tw`text-white`}
-                  title={"SIGNUP"}
-                />
-
-
-
-              </View>
-          }
-
-
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Login")
-            }}
-          >
-            <View style={tw`mt-5`}>
-
-              <Text>
-                Already Member?
-
-                <Text style={{ color: '#00B1E7' }}> Login Now</Text>
-
+          <ScrollView>
+            <View style={tw`w-80 h-20 items-center justify-center mt-5`}>
+              <Text style={[tw`text-3xl font-bold text-gray-400`, { color: '#00B1E7' }]}>
+                Great
+              </Text>
+              <Text style={[tw`text-sm font-normal text-gray-400`, { color: '#00B1E7' }]}>
+                Sign Up To Create Your Account
               </Text>
             </View>
-          </TouchableOpacity>
+
+            <Input
+              onchangetext={setname}
+              source={require("../../Images/user.png")}
+              placeholder={"Your Full Name"}
+            />
+
+            <Input
+              onchangetext={setphone}
+              entry={false}
+              source={require("../../Images/smartphone.png")}
+              placeholder={"Enter Your Phone Number"}
+            />
+
+
+            <Input
+              onchangetext={setcity}
+              entry={false}
+              source={require("../../Images/location-pin.png")}
+              placeholder={"Enter Your City"}
+            />
+
+            <Input
+              onchangetext={setemail}
+              source={require("../../Images/mail.png")}
+              placeholder={"Enter Your Email"}
+            />
+
+            <Input
+              onchangetext={setpassword}
+              entry={true}
+              source={require("../../Images/padlock.png")}
+              placeholder={"Enter Your Password"}
+            />
+
+
+
+            <View style={tw` justify-start  items-center flex-row w-80 h-12 mt-5`}>
+              <View style={tw` flex-row items-center justify-center w-80 h-10  `}>
+                <CheckBox
+                  disabled={false}
+                  value={toggleCheckBox}
+                  onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                />
+                <Text style={tw`text-gray-400 `}>By Checking The Box You Agree Our Term And Condition</Text>
+              </View>
+
+            </View>
+
+            {
+              loading ?
+                <ActivityIndicator size={'large'} color={'#199A8E'} />
+                :
+                <View style={tw` justify-between w-80 h-15 mt-5 `}>
+                  <Buttonnormal
+                    onPress={() => {
+                      // navigation.navigate('Tabbar')
+                      Signinwithemailandpass()
+                    }}
+                    c1={'#0B4064'}
+                    c2={'#0B4064'}
+                    style={tw`text-white`}
+                    title={"SIGNUP"}
+                  />
+
+
+
+                </View>
+            }
+
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("Login")
+              }}
+            >
+              <View style={tw`mt-5 self-center`}>
+
+                <Text>
+                  Already Member?
+
+                  <Text style={{ color: '#00B1E7' }}> Login Now</Text>
+
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
         <Toast />
       </View>

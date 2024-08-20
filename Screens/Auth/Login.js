@@ -11,7 +11,7 @@ import { auth, db } from '../../Firebase'
 import Toast from 'react-native-toast-message'
 import Deviceinfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { useFocusEffect } from '@react-navigation/native'
 
 const Login = ({ navigation }) => {
@@ -24,82 +24,73 @@ const Login = ({ navigation }) => {
   const [loading, setloading] = useState(false)
   const [GetData, setGetData] = useState([]);
   // const id =  Deviceinfo.getUniqueId();
-  useFocusEffect(
-
-    React.useCallback(() => {
-      console.log("ma chala ")
-      const coll = collection(db, 'Signup');
-      const q = query(coll, where('role', '==', "admin"));
-
-      const unSubscribe = onSnapshot(q, snapshot => {
-        console.log(snapshot.docs.length);
-        setGetData(
-          snapshot.docs.map(doc => ({
-            selecteduser: doc.data(),
-          })),
-        );
-      });
-
-      // Cleanup function to unsubscribe from the snapshot listener
-      return () => {
-        unSubscribe();
-      };
-    }, []) // Empty dependency array ensures this runs only on focus and cleanup on blur
-  );
-
+ 
   const loginwithemailandpass = async () => {
     const id = await Deviceinfo.getUniqueId();
-    if (!email || !password) {
-      showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
-    }
-
-    else {
-      setloading(true)
-      try {
+    setloading(true)
+    try {
         signInWithEmailAndPassword(auth, email, password)
-          .then(data1 => {
-            // navigation.navigate("Tabbar")
-            console.log("get email :", GetData[0].selecteduser.email);
-            console.log("login email :", data1.user.email);
-            if (GetData[0].selecteduser.email === data1.user.email) {
-              console.log("admin");
-              AsyncStorage.setItem("mobileid", id).then(() => {
-                AsyncStorage.setItem("role", "admin").then(() => {
-                  AsyncStorage.setItem("email", data1.user.email).then(() => {
-                    navigation.navigate("Tabbar")
-                    setloading(false)
-                    console.log("unique id ", id);
-                  })
-                })
-              })
-            }
-            else {
-              console.log("user");
-              AsyncStorage.setItem("mobileid", id).then(() => {
-                AsyncStorage.setItem("role", "user").then(() => {
-                  AsyncStorage.setItem("email", data1.user.email).then(() => {
+            .then(data1 => {
+                const coll = collection(db, 'Profile');
+                // const q = query(coll, where('role', '==', label1), where('email', '==', email));
+                const q = query(coll, where('email', '==', email));
 
-                    navigation.navigate("Tabbar")
-                    setloading(false)
-                    console.log("unique id ", id);
-                  })
-                })
-              })
-            }
-          })
-          .catch(error => {
-            setloading(false)
+                const fetchData = async () => {
+                    try {
+                        const querySnapshot = await getDocs(q);
 
-            showToast("error", "Error", error.message, true, 1000)
+                        if (querySnapshot.size > 0) {
+                            console.log("size : ", querySnapshot.size);
+                            querySnapshot.forEach(async (docs) => {
+                                const status = docs.get("profilestatus")
+                                const rolee = docs.get("role")
+                                const city = docs.get("city")
+                                console.log("status ", status);
+                                if (status === "pending") {
+                                    setloading(false)
+                                    showToast("error", "Your Account Has Been Disabled", "Please Contact To Admin", false, 3000)
+                                }
+                                else {
+                                    setloading(false)
+                                    AsyncStorage.setItem("mobileid", id).then(() => {
+                                        AsyncStorage.setItem("role", rolee).then(() => {
+                                            AsyncStorage.setItem("email", data1.user.email).then(() => {
+                                              AsyncStorage.setItem("city", city).then(() => {
+                                                navigation.navigate("Tabbar")
+                                                setloading(false)
+                                                console.log("unique id ", id);
+                                            })
+                                          })
+                                        })
+                                    })
+                                }
+                            })
 
-          });
-      } catch (error) {
+
+                        } else {
+                            setloading(false)
+                            showToast("error", "Error", "Please Select Valid Role", true, 3000)
+                        }
+                    } catch (error) {
+                        setloading(false)
+                        console.error('Error fetching data: ', error);
+                    }
+                };
+
+                fetchData();
+
+            })
+            .catch(error => {
+                setloading(false)
+                showToast("error", "Error", error.message, true, 1000)
+
+            });
+    } catch (error) {
         setloading(false)
-        showToast("error", "Error", 'Plzz Enter Valid Email Or Pass', true, 1000)
-      }
-     
+        showToast("error", "Error", error.message, true, 3000)
     }
-  };
+    // }
+};
 
 
   return (

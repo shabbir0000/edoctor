@@ -19,18 +19,16 @@ const Cbids = ({ navigation }) => {
   const [GetData, setGetData] = useState([]);
   const [GetData1, setGetData1] = useState([]);
   const [GetData2, setGetData2] = useState([]);
+  const [GetData3, setGetData3] = useState([]);
   const datee = new Date()
   const showdate = datee.getFullYear() + "/" + (datee.getMonth() + 1) + "/" + datee.getDate();
 
 
   useEffect(() => {
     AsyncStorage.getItem("role").then((role) => {
-      if (role === "user") {
-        setuserflag(true)
-      }
-      else {
-        setuserflag(false)
-      }
+
+      setuserflag(role)
+
     })
   }, [])
 
@@ -38,8 +36,8 @@ const Cbids = ({ navigation }) => {
   useEffect(() => {
 
     AsyncStorage.getItem("email").then((email) => {
-      const coll = collection(db, 'Doctors');
-      const q = query(coll, limit(4));
+      const coll = collection(db, 'Profile');
+      const q = query(coll, where("role", '==', "doctor"), limit(4));
 
       const unSubscribe = onSnapshot(q, snapshot => {
         setGetData(
@@ -59,7 +57,7 @@ const Cbids = ({ navigation }) => {
 
     AsyncStorage.getItem("email").then((email) => {
       const coll = collection(db, 'Appointment');
-      const q = query(coll, where("bookdate", '==',showdate));
+      const q = query(coll, where("bookdate", '==', showdate));
 
       const unSubscribe = onSnapshot(q, snapshot => {
         setGetData1(
@@ -78,10 +76,10 @@ const Cbids = ({ navigation }) => {
   useEffect(() => {
 
     AsyncStorage.getItem("email").then((email) => {
-      const coll = collection(db, 'Doctors');
-      // const q = query(coll, limit(4));
+      const coll = collection(db, 'Profile');
+      const q = query(coll, where("ownemail", '==', email), where("role", '==', "doctor"));
 
-      const unSubscribe = onSnapshot(coll, snapshot => {
+      const unSubscribe = onSnapshot(q, snapshot => {
         setGetData2(
           snapshot.docs.map(doc => ({
             selecteduser: doc.data(),
@@ -95,6 +93,29 @@ const Cbids = ({ navigation }) => {
   }, []);
 
 
+  
+  useEffect(() => {
+
+    AsyncStorage.getItem("email").then((email) => {
+      AsyncStorage.getItem("city").then((city) => {
+      const coll = collection(db, 'Profile');
+      const q = query(coll, where("city", '==',city), where("role", '==', "subadmin"));
+
+      const unSubscribe = onSnapshot(q, snapshot => {
+        setGetData3(
+          snapshot.docs.map(doc => ({
+            selecteduser: doc.data(),
+          })),
+        );
+      });
+      return () => {
+        unSubscribe();
+      };
+    })
+  })
+  }, []);
+
+
 
   return (
     <>
@@ -102,7 +123,7 @@ const Cbids = ({ navigation }) => {
         loading ?
           <ActivityIndicator style={{ flex: 1, alignItems: 'center', alignSelf: 'center', justifyContent: 'center' }} size={'large'} />
           :
-          userflag ?
+          userflag === "user" ?
             <>
               <View style={tw` h-7 w-80 mt-15 self-center flex-row justify-between items-center`}>
                 <Text style={tw`text-base font-bold`}>Top Doctors</Text>
@@ -123,20 +144,64 @@ const Cbids = ({ navigation }) => {
                       <TouchableOpacity
                         onPress={() => {
                           navigation.navigate("Showappoinments", {
-                            phone: data.selecteduser.doctorphone,
+                            phone: data.selecteduser.phone,
                             slots: data.selecteduser.slots,
-                            usercontrol : true,
+                            usercontrol: true,
                           })
                         }}
                       >
                         <View key={index} style={tw`border ml-3 mr-3 border-gray-300 h-50 w-45 self-center items-center justify-center mt-5 rounded-md`}>
                           <Image
                             style={tw`border h-25 w-25 rounded-full`}
-                            source={{ uri: data.selecteduser.profile }}
+                            source={{ uri: data.selecteduser.profilephoto }}
                           />
-                          <Text style={tw`text-base font-bold`}>{data.selecteduser.doctorname}</Text>
+                          <Text style={tw`text-base font-bold`}>{data.selecteduser.fullname}</Text>
                           <Text style={tw`text-base font-light`}>{data.selecteduser.doctortypelabel}</Text>
                           <Text style={tw`text-base font-light`}>{data.selecteduser.doctortimefromlabel} To {data.selecteduser.doctortimetolabel}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))
+                  }
+
+
+
+
+
+                </ScrollView>
+              </View>
+
+              <View style={tw` h-7 w-80  self-center flex-row justify-between items-center`}>
+                <Text style={tw`text-base font-bold`}>Near Hospital</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Yourplan')
+                  }}
+                >
+                  <Text style={tw`text-base text-green-500 font-semibold`}>See All</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={tw`h-70 w-90  justify-center rounded-md`}>
+                <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
+                  {
+                    GetData3.map((data, index) => (
+                      <TouchableOpacity
+                        // onPress={() => {
+                        //   navigation.navigate("Showappoinments", {
+                        //     phone: data.selecteduser.phone,
+                        //     slots: data.selecteduser.slots,
+                        //     usercontrol: true,
+                        //   })
+                        // }}
+                      >
+                        <View key={index} style={tw`border ml-3 mr-3 border-gray-300 h-60 w-70 self-center items-start justify-start mt-5 rounded-md`}>
+                          <Image
+                            style={tw`border h-40 w-69 self-center `}
+                            source={{ uri: data.selecteduser.profilephoto }}
+                          />
+                          <Text style={tw`text-base ml-3 font-bold`}>{data.selecteduser.fullname.toUpperCase()}</Text>
+                          <Text style={tw`text-base ml-3 font-light`}>{data.selecteduser.city.toUpperCase()}</Text>
+                          <Text style={tw`text-base ml-3 font-light`}>{data.selecteduser.phone}</Text>
                         </View>
                       </TouchableOpacity>
                     ))
