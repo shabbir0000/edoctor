@@ -104,6 +104,7 @@ const Sessions = ({ navigation, route }) => {
     const [label2, setlabel2] = useState(labell2);
     const [isFocus2, setIsFocus2] = useState(false);
     const [GetData, setGetData] = useState([])
+    const [GetData1, setGetData1] = useState([]);
 
     const userid = uuid.v4();
     const datee = new Date()
@@ -167,6 +168,24 @@ const Sessions = ({ navigation, route }) => {
 
 
 
+    useEffect(() => {
+        AsyncStorage.getItem("email").then((email) => {
+            const user = auth.currentUser;
+            const coll = collection(db, 'Profile');
+            const q = query(coll, where("email", '==', email));
+            const unSubscribe = onSnapshot(q, snapshot => {
+                setGetData1(
+                    snapshot.docs.map(doc => ({
+                        selecteduser: doc.data(),
+                    })),
+                );
+            });
+            return () => {
+                unSubscribe();
+            };
+        })
+    }, []);
+
 
     const Validation = Yup.object().shape({
         doctorname: Yup.string().required('Must be filled'),
@@ -199,6 +218,8 @@ const Sessions = ({ navigation, route }) => {
 
 
     const showtodayappointment = async () => {
+        console.log("date today",showdate);
+        
         AsyncStorage.getItem("email").then((email) => {
             const coll = collection(db, 'Appointment');
             const q = query(coll, where('email', '==', email), where('bookdate', '==', showdate));
@@ -377,6 +398,9 @@ const Sessions = ({ navigation, route }) => {
                 phone: doctorphone,
                 email: doctoremail.toLowerCase().trim(),
                 city: doctorcity.toLowerCase().trim(),
+                hospitalname: GetData1[0].selecteduser.fullname,
+                hospitalphone: GetData1[0].selecteduser.phone,
+                hospitaladdress: GetData1[0].selecteduser.address,
                 password: doctorpassword,
                 ownemail: user,
                 doctortype: value2,
@@ -406,6 +430,9 @@ const Sessions = ({ navigation, route }) => {
                         phone: doctorphone,
                         email: doctoremail.toLowerCase().trim(),
                         city: doctorcity.toLowerCase().trim(),
+                        hospitalname: GetData1[0].selecteduser.fullname,
+                        hospitalphone: GetData1[0].selecteduser.phone,
+                        hospitaladdress: GetData1[0].selecteduser.address,
                         password: doctorpassword,
                         ownemail: user,
                         doctortype: value2,
@@ -490,6 +517,9 @@ const Sessions = ({ navigation, route }) => {
             phone: doctorphone,
             email: doctoremail.toLowerCase().trim(),
             city: doctorcity.toLowerCase().trim(),
+            hospitalname: GetData1[0].selecteduser.fullname,
+            hospitalphone: GetData1[0].selecteduser.phone,
+            hospitaladdress: GetData1[0].selecteduser.address,
             password: doctorpassword,
             ownemail: user,
             doctortype: value2,

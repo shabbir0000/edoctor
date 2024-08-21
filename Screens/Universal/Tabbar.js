@@ -10,6 +10,7 @@ import Yourplan from "../Tabbar/Yourplan";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import Category from "./Category";
+import Allhospitals from "../Tabbar/Allhospitals";
 const Tab = createBottomTabNavigator();
 
 function Tabbar() {
@@ -70,6 +71,21 @@ function Tabbar() {
             />
 
             {
+                userflag === "user" &&
+                <Tab.Screen
+                    options={{
+                        tabBarLabel: 'Hospitals',
+
+                        tabBarIcon: ({ focused }) => (
+                            <Image style={tw`h-8 w-8 `} source={focused ? require("../../Images/hospitalb.png") : require("../../Images/hospital1.png")} />
+                        ),
+                    }}
+                    name="Hospitals"
+                    component={Allhospitals}
+                />
+            }
+
+            {
                 userflag === "user" || userflag === "subadmin" ?
                     <>
                         <Tab.Screen
@@ -96,9 +112,9 @@ function Tabbar() {
                                         doctorname: "",
                                         doctortype: "",
                                         doctorphone: "",
-                                        doctoremail : "",
-                                        doctorpassword : "",
-                                        doctorcity : "",
+                                        doctoremail: "",
+                                        doctorpassword: "",
+                                        doctorcity: "",
                                         mondayy: false,
                                         tuesdayy: false,
                                         wednesdayy: false,
@@ -113,7 +129,7 @@ function Tabbar() {
                                         labell1: "",
                                         labell2: "",
                                         profile: "https://firebasestorage.googleapis.com/v0/b/supplysync-3e4b1.appspot.com/o/allfiles%2Fimages.jpg?alt=media&token=0aa9155e-5ebd-4b22-8f77-c9d70d280507",
-                                        profilestatus : ""
+                                        profilestatus: ""
                                     });
                                 },
                             })}
@@ -136,8 +152,8 @@ function Tabbar() {
                         <Tab.Screen
                             options={{
                                 tabBarLabel: 'Manage',
-                               
-                              
+
+
                                 tabBarIcon: ({ focused }) => (
                                     <Image style={tw`h-7 w-7 top-1`} source={focused ? require("../../Images/to-do-listb.png") : require("../../Images/to-do-list.png")} />
                                 ),

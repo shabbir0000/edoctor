@@ -1,4 +1,4 @@
-import { View, Text, Image, Alert, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, Image, Alert, TouchableOpacity, Linking, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import tw from "twrnc"
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,6 +14,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Showbalance = () => {
 
 
+    const data2 = [
+        { label: 'Cardiologist', image: 'https://example.com/cardiologist.png' },
+        { label: 'Dermatologist', image: 'https://example.com/dermatologist.png' },
+        { label: 'Neurologist', image: 'https://example.com/neurologist.png' },
+        { label: 'Orthopedic', image: 'https://example.com/orthopedic.png' },
+        { label: 'Pediatrician', image: 'https://example.com/pediatrician.png' },
+        { label: 'Psychiatrist', image: 'https://example.com/psychiatrist.png' },
+        { label: 'Radiologist', image: 'https://example.com/radiologist.png' },
+        { label: 'Urologist', image: 'https://example.com/urologist.png' },
+        { label: 'Gynecologist', image: 'https://example.com/gynecologist.png' },
+        { label: 'Ophthalmologist', image: 'https://example.com/ophthalmologist.png' },
+        { label: 'Anesthesiologist', image: 'https://example.com/anesthesiologist.png' },
+        { label: 'Oncologist', image: 'https://example.com/oncologist.png' },
+        { label: 'Pathologist', image: 'https://example.com/pathologist.png' },
+        { label: 'Rheumatologist', image: 'https://example.com/rheumatologist.png' },
+        { label: 'General Practitioner', image: 'https://example.com/general_practitioner.png' }
+    ];
+
+
     const auth = getAuth(app);
     const [GetData, setGetData] = useState([]);
     const [GetData1, setGetData1] = useState([]);
@@ -22,9 +41,9 @@ const Showbalance = () => {
 
     useEffect(() => {
         AsyncStorage.getItem("role").then((role) => {
-           
-                setuserflag(role)
-            
+
+            setuserflag(role)
+
         })
     }, [])
 
@@ -94,8 +113,40 @@ const Showbalance = () => {
 
             </LinearGradient>
 
-           
+            <View
+                style={tw`w-85 h-12 mt-10  flex-row  self-center  items-center`}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {/* card 1 */}
 
+                    <>
+
+
+                        {data2?.map((item, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => {
+                                    // setloading(true)
+                                    // getcatvideo(item.id)
+                                    getdatabycat(item.label)
+                                    setcat(item.label)
+                                }}>
+                                <View style={[tw`h-10 w-30 ml-5  flex-col items-center justify-evenly `]}>
+                                    <Image style={tw`h-5 w-5  rounded-full `} source={{ uri: item.image }} />
+                                    <Text numberOfLines={1} style={tw`text-center text-black w-20`}>{item.label}</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                        ))
+                        }
+
+
+
+
+                    </>
+
+
+                </ScrollView>
+            </View>
 
         </>
     )

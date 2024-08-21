@@ -104,8 +104,8 @@ const Showappointments = ({ navigation, route }) => {
             // setuserflag(true)
             AsyncStorage.getItem("email").then((email) => {
                 setemail(email)
-                const coll = collection(db, 'Doctors');
-                const q = query(coll, where("doctorphone", '==', phone));
+                const coll = collection(db, 'Profile');
+                const q = query(coll, where("phone", '==', phone));
 
                 const unSubscribe = onSnapshot(q, snapshot => {
                     setGetData(
@@ -364,12 +364,12 @@ const Showappointments = ({ navigation, route }) => {
                                                 <Image
                                                     style={tw`h-30 w-35 border rounded-md`}
                                                     resizeMode='cover'
-                                                    source={{ uri: data.selecteduser.profile }}
+                                                    source={{ uri: data.selecteduser.profilephoto }}
                                                 />
                                                 <View style={tw`w-40 h-30 justify-start  items-start `}>
 
 
-                                                    <Text numberOfLines={1} style={tw`font-bold w-30 text-xl`}>{data.selecteduser.doctorname}</Text>
+                                                    <Text numberOfLines={1} style={tw`font-bold w-30 text-xl`}>{data.selecteduser.fullname}</Text>
                                                     <Text numberOfLines={1} style={tw`font-light mt-2 w-30 text-gray-400 text-base`}>{data.selecteduser.doctortypelabel}</Text>
 
                                                     <Text numberOfLines={1} style={tw`font-medium mt-2  w-30 text-gray-400 text-base`}>From {data.selecteduser.doctortimefromlabel}</Text>
@@ -379,22 +379,56 @@ const Showappointments = ({ navigation, route }) => {
 
                                             </View>
 
-                                            <View style={tw` self-center items-center justify-center w-80 h-40 `}>
+                                            <View style={tw` self-center items-center justify-center w-80 h-30 `}>
                                                 <Text style={tw`font-light text-sm`}>
-                                                    {`At Dee-Felz, we provide top-notch healthcare with leading doctors like `}
+                                                    {`At ${data.selecteduser.hospitalname}, we provide top-notch healthcare with leading doctors like `}
                                                     <Text style={tw`font-semibold`}>
                                                         {data.selecteduser.doctorname}
                                                     </Text>
-                                                    {`, the city’s top `}
+                                                    {`, the top `}
                                                     <Text style={tw`font-semibold`}>
                                                         {data.selecteduser.doctortypelabel}
                                                     </Text>
-                                                    {`. Our clinic ensures exceptional care with skilled professionals dedicated to your well-being. From expert diagnosis to advanced treatments, trust Dee-Felz for unparalleled medical attention.`}
+                                                    {`. We ensures exceptional care with skilled professionals dedicated to your well-being. From expert diagnosis to advanced treatments.`}
                                                 </Text>
 
                                             </View>
 
-                                            <View style={tw`h-40  mb-5  justify-between flex-col w-80 self-center `}>
+                                            <View style={tw`w-80 h-40`}>
+                                                <Text style={[tw`font-bold text-xl `, { color: "#00B1E7" }]} >WORK AT</Text>
+                                                <View style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                                                    <Image
+                                                        source={require("../../Images/user.png")}
+                                                        style={tw`h-5 w-5`}
+                                                    />
+
+                                                    <Text numberOfLines={1} style={tw`w-70 font-light`}>{data.selecteduser.hospitalname}</Text>
+
+                                                </View>
+
+                                                <View style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                                                    <Image
+                                                        source={require("../../Images/smartphone.png")}
+                                                        style={tw`h-5 w-5`}
+                                                    />
+
+                                                    <Text numberOfLines={1} style={tw`w-70 font-light`}>{data.selecteduser.phone}</Text>
+
+                                                </View>
+
+
+                                                <View style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                                                    <Image
+                                                        source={require("../../Images/location-pin.png")}
+                                                        style={tw`h-5 w-5`}
+                                                    />
+
+                                                    <Text numberOfLines={2} style={tw`w-70 font-light`}>{data.selecteduser.hospitaladdress}</Text>
+
+                                                </View>
+                                            </View>
+
+                                            <View style={tw`h-35  mb-5  justify-between flex-col w-80 self-center `}>
 
 
                                                 <View style={tw`h-18  self-center  w-80 `}>
@@ -439,7 +473,7 @@ const Showappointments = ({ navigation, route }) => {
 
 
 
-                                                <View style={tw` w-80 h-16  flex-row justify-between items-center self-center `}>
+                                                <View style={tw` w-80 h-12   flex-row justify-between items-center self-center `}>
                                                     <View style={tw` w-35 h-10 justify-between self-center `}>
 
                                                         <TouchableOpacity
@@ -517,8 +551,8 @@ const Showappointments = ({ navigation, route }) => {
                                                     <TouchableOpacity
                                                         onPress={() => {
                                                             bookappointment(
-                                                                data.selecteduser.doctorname,
-                                                                data.selecteduser.doctorphone,
+                                                                data.selecteduser.fullname,
+                                                                data.selecteduser.phone,
                                                                 data.selecteduser.monday,
                                                                 data.selecteduser.tuesday,
                                                                 data.selecteduser.wednesday,
@@ -529,7 +563,7 @@ const Showappointments = ({ navigation, route }) => {
                                                                 data.selecteduser.doctortypelabel,
                                                                 data.selecteduser.doctortimefromlabel,
                                                                 data.selecteduser.doctortimetolabel,
-                                                                data.selecteduser.profile
+                                                                data.selecteduser.profilephoto
                                                             )
 
                                                         }}
@@ -583,16 +617,16 @@ const Showappointments = ({ navigation, route }) => {
                                                         if (item.text === "Today Cancelled") {
                                                             setcat(item.text)
                                                             showtodaycancelledappointment()
-                                                          
+
                                                         } else if (item.text === "Today All") {
                                                             setcat(item.text)
                                                             showtodayappointment()
-                                                          
+
                                                         }
                                                         else {
                                                             setcat(item.text)
                                                             showallappointment()
-                                                            
+
                                                         }
 
                                                     }}>

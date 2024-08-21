@@ -174,7 +174,7 @@ const Cbids = ({ navigation }) => {
                 <Text style={tw`text-base font-bold`}>Near Hospital</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('Yourplan')
+                    navigation.navigate('Hospitals')
                   }}
                 >
                   <Text style={tw`text-base text-green-500 font-semibold`}>See All</Text>
@@ -186,13 +186,13 @@ const Cbids = ({ navigation }) => {
                   {
                     GetData3.map((data, index) => (
                       <TouchableOpacity
-                        // onPress={() => {
-                        //   navigation.navigate("Showappoinments", {
-                        //     phone: data.selecteduser.phone,
-                        //     slots: data.selecteduser.slots,
-                        //     usercontrol: true,
-                        //   })
-                        // }}
+                        onPress={() => {
+                          navigation.navigate("Hospitaldetail", {
+                            phone: data.selecteduser.phone,
+                            name: data.selecteduser.fullname,
+                            email : data.selecteduser.email
+                          })
+                        }}
                       >
                         <View key={index} style={tw`border ml-3 mr-3 border-gray-300 h-60 w-70 self-center items-start justify-start mt-5 rounded-md`}>
                           <Image

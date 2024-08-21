@@ -35,19 +35,24 @@ const Yourplan = ({ navigation }) => {
     useEffect(() => {
 
         AsyncStorage.getItem("email").then((email) => {
-            const coll = collection(db, 'Profile');
-            const q = query(coll, where('ownemail', '==', email),where('role', '==', "doctor"));
+            AsyncStorage.getItem("role").then((role) => {
+                AsyncStorage.getItem("city").then((city) => {
+                    const coll = collection(db, 'Profile');
+                    const q = query(coll, where('ownemail', '==', email), where('role', '==', "doctor"));
+                    const q1 = query(coll, where('city', '==', city), where('role', '==', "doctor"));
 
-            const unSubscribe = onSnapshot(q, snapshot => {
-                setGetData(
-                    snapshot.docs.map(doc => ({
-                        selecteduser: doc.data(),
-                    })),
-                );
-            });
-            return () => {
-                unSubscribe();
-            };
+                    const unSubscribe = onSnapshot(role === "user" ? q1 : q, snapshot => {
+                        setGetData(
+                            snapshot.docs.map(doc => ({
+                                selecteduser: doc.data(),
+                            })),
+                        );
+                    });
+                    return () => {
+                        unSubscribe();
+                    };
+                })
+            })
         })
     }, []);
 
@@ -58,27 +63,29 @@ const Yourplan = ({ navigation }) => {
 
     const getdatabycat = async (cat) => {
         AsyncStorage.getItem("email").then((email) => {
-            const coll = collection(db, 'Profile');
-            const q = query(coll, where('ownemail', '==', email), where('doctortypelabel', '==', cat));
+            AsyncStorage.getItem("city").then((city) => {
+                const coll = collection(db, 'Profile');
+                const q = query(coll, where('city', '==', city), where('role', '==', "doctor"), where('doctortypelabel', '==', cat));
 
-            const unSubscribe = onSnapshot(q, snapshot => {
-                setGetData(
-                    snapshot.docs.map(doc => ({
-                        selecteduser: doc.data(),
-                    })),
-                );
-            });
-            return () => {
-                unSubscribe();
-            };
+                const unSubscribe = onSnapshot(q, snapshot => {
+                    setGetData(
+                        snapshot.docs.map(doc => ({
+                            selecteduser: doc.data(),
+                        })),
+                    );
+                });
+                return () => {
+                    unSubscribe();
+                };
+            })
         })
     }
 
     const getalldata = async () => {
-        AsyncStorage.getItem("email").then((email) => {
+        AsyncStorage.getItem("city").then((city) => {
             const coll = collection(db, 'Profile');
             // const q = query(coll, where('doctortypelabel', '==', cat));
-            const q = query(coll, where('ownemail', '==', email));
+            const q = query(coll, where('city', '==', city), where('role', '==', "doctor"));
             const unSubscribe = onSnapshot(q, snapshot => {
                 setGetData(
                     snapshot.docs.map(doc => ({
@@ -216,7 +223,7 @@ const Yourplan = ({ navigation }) => {
                                             key={index}
                                             onPress={() => {
                                                 navigation.navigate("Showappoinments", {
-                                                    phone: data.selecteduser.doctorphone,
+                                                    phone: data.selecteduser.phone,
                                                     slots: data.selecteduser.slots,
                                                     usercontrol: true
                                                     // filledapp: allSlots
@@ -228,10 +235,10 @@ const Yourplan = ({ navigation }) => {
                                                     <Image
                                                         style={tw`h-25 w-25 rounded-full`}
                                                         resizeMode='cover'
-                                                        source={{ uri: data.selecteduser.profile }}
+                                                        source={{ uri: data.selecteduser.profilephoto }}
                                                     />
                                                     <View>
-                                                        <Text numberOfLines={1} style={tw`font-bold w-40 text-xl`}>{data.selecteduser.doctorname}</Text>
+                                                        <Text numberOfLines={1} style={tw`font-bold w-40 text-xl`}>{data.selecteduser.fullname}</Text>
                                                         <Text numberOfLines={1} style={tw`font-light mt-1 w-40 text-gray-400 text-sm`}>{data.selecteduser.doctortypelabel}</Text>
                                                         <Text numberOfLines={1} style={tw`font-light mt-1 w-40  text-sm`}>{data.selecteduser.doctortimefromlabel} To {data.selecteduser.doctortimetolabel}</Text>
                                                     </View>
@@ -348,13 +355,13 @@ const Yourplan = ({ navigation }) => {
                                     <>
                                         <TouchableOpacity
                                             key={index}
-                                        onPress={() => {
-                                            navigation.navigate("Showappoinments", {
-                                                phone: data.selecteduser.phone,
-                                                slots: data.selecteduser.slots,
-                                                usercontrol : false,
-                                            })
-                                        }}
+                                            onPress={() => {
+                                                navigation.navigate("Showappoinments", {
+                                                    phone: data.selecteduser.phone,
+                                                    slots: data.selecteduser.slots,
+                                                    usercontrol: false,
+                                                })
+                                            }}
                                         >
                                             <View style={[tw`border flex-row justify-around items-center w-80 h-45 rounded-md self-center mt-5`, { borderColor: "#00B1E7" }]}>
                                                 <View style={tw`h-40  w-30`}>

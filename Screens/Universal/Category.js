@@ -118,6 +118,7 @@ const Category = ({ navigation }) => {
                       doctorname: "",
                       doctorphone: "",
                       doctorcity : "",
+                      doctoraddress : "",
                       doctoremail : "",
                       doctorpassword : '',
                       mondayy: false,
@@ -193,6 +194,7 @@ const Category = ({ navigation }) => {
                                   navigation.navigate("Addupdatesubadmin", {
                                     doctorname: data.selecteduser.fullname,
                                     doctorcity: data.selecteduser.city,
+                                    doctoraddress: data.selecteduser.address,
                                     doctorphone: data.selecteduser.phone,
                                     doctoremail: data.selecteduser.email,
                                     doctorpassword: data.selecteduser.password,

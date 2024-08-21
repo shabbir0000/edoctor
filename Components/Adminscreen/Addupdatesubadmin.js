@@ -45,6 +45,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
         doctorname,
         doctorphone,
         doctorcity,
+        doctoraddress,
         doctoremail,
         doctorpassword,
         mondayy,
@@ -64,7 +65,8 @@ const Addupdatesubadmin = ({ navigation, route }) => {
         doctorphone: '',
         doctorcity: '',
         doctoremail: '',
-        doctorpassword: ''
+        doctorpassword: '',
+        doctoraddress: ''
     });
 
     const [loading, setloading] = useState(false);
@@ -99,7 +101,8 @@ const Addupdatesubadmin = ({ navigation, route }) => {
         doctorphone: Yup.string().required('Must be filled'),
         doctorcity: Yup.string().required('Must be filled'),
         doctoremail: Yup.string().required('Must be filled'),
-        doctorpassword: Yup.string().required('Must be filled'),
+        // doctorpassword: Yup.string().required('Must be filled'),
+        doctoraddress: Yup.string().required('Must be filled'),
     });
 
     useFocusEffect(
@@ -158,6 +161,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
             doctorcity: doctorcity,
             doctoremail: doctoremail,
             doctorpassword: doctorpassword,
+            doctoraddress: doctoraddress,
         });
         setmonday(mondayy)
         settuesday(tuesdayy)
@@ -176,7 +180,8 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                 doctorphone: '',
                 doctorcity: '',
                 doctoremail: '',
-                doctorpassword : ''
+                doctorpassword: '',
+                doctoraddress: '',
             });
             setmonday(false)
             settuesday(false)
@@ -218,9 +223,9 @@ const Addupdatesubadmin = ({ navigation, route }) => {
 
 
 
-    const uploaddocfile = async (doctorname, doctorphone, doctorcity, doctoremail,doctorpassword) => {
-        console.log("data :", doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, imglink1);
-        if (!doctorname || !doctorphone || !doctorcity || !doctoremail || !doctorpassword || !imglink1) {
+    const uploaddocfile = async (doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress) => {
+        console.log("data :", doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, imglink1);
+        if (!doctorname || !doctorphone || !doctorcity || !doctoremail || !doctorpassword || !doctoraddress || !imglink1) {
             Alert.alert('Alert', 'Please Fill All The Detail');
 
         }
@@ -230,12 +235,12 @@ const Addupdatesubadmin = ({ navigation, route }) => {
             await reference.putFile(imglink1);
             const url = await storage().ref(`allfiles/${name1}`).getDownloadURL();
             console.log('your file is locating :', url);
-            adddoc(doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, url);
+            adddoc(doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, url);
         }
     };
 
-    const adddoc = async (doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, url) => {
-        if (!doctorname || !doctorphone || !doctorcity || !doctoremail || !doctorpassword) {
+    const adddoc = async (doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, url) => {
+        if (!doctorname || !doctorphone || !doctorcity || !doctoremail || !doctorpassword || !doctoraddress) {
             showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
         }
 
@@ -247,6 +252,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                 city: doctorcity.toLowerCase().trim(),
                 email: doctoremail.toLowerCase().trim(),
                 password: doctorpassword,
+                address: doctoraddress,
                 monday: monday,
                 tuesday: tuesday,
                 wednesday: wednesday,
@@ -269,6 +275,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                         city: doctorcity.toLowerCase().trim(),
                         email: doctoremail.toLowerCase().trim(),
                         password: doctorpassword,
+                        address: doctoraddress,
                         monday: monday,
                         tuesday: tuesday,
                         wednesday: wednesday,
@@ -311,7 +318,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
     };
 
 
-    const updatedocfile = async (doctorname, doctorphone, doctorcity, doctoremail,doctorpassword) => {
+    const updatedocfile = async (doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress) => {
         if (filedata1.startsWith('file://') || filedata1.startsWith('content://')) {
             // showModal;
             setloading(true);
@@ -319,12 +326,12 @@ const Addupdatesubadmin = ({ navigation, route }) => {
             await reference.putFile(imglink1);
             const url = await storage().ref(`allfiles/${name1}`).getDownloadURL();
             console.log('your file is locating :', url);
-            updatedoc(doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, url);
+            updatedoc(doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, url);
         }
         else {
             try {
                 setloading(true);
-                updatedoc(doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, filedata1);
+                updatedoc(doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, filedata1);
             }
             catch (error) {
                 setloading(false);
@@ -333,26 +340,27 @@ const Addupdatesubadmin = ({ navigation, route }) => {
         }
     };
 
-    const updatedoc = async (doctorname, doctorphone, doctorcity, doctoremail,doctorpassword, url) => {
+    const updatedoc = async (doctorname, doctorphone, doctorcity, doctoremail, doctorpassword, doctoraddress, url) => {
 
         updateDoc(doc(db, 'Profile', docid), {
             fullname: doctorname,
-                phone: doctorphone,
-                city: doctorcity.toLowerCase().trim(),
-                email: doctoremail.toLowerCase().trim(),
-                password: doctorpassword,
-                monday: monday,
-                tuesday: tuesday,
-                wednesday: wednesday,
-                thursday: thursday,
-                friday: friday,
-                saturday: saturday,
-                sunday: sunday,
-                profilestatus: profilestatus,
-                role: "subadmin",
-                userid : docid,
-                timestamp: serverTimestamp(),
-                profilephoto: url
+            phone: doctorphone,
+            city: doctorcity.toLowerCase().trim(),
+            email: doctoremail.toLowerCase().trim(),
+            password: doctorpassword,
+            address: doctoraddress,
+            monday: monday,
+            tuesday: tuesday,
+            wednesday: wednesday,
+            thursday: thursday,
+            friday: friday,
+            saturday: saturday,
+            sunday: sunday,
+            profilestatus: profilestatus,
+            role: "subadmin",
+            userid: docid,
+            timestamp: serverTimestamp(),
+            profilephoto: url
         })
             .then(() => {
                 console.log('done');
@@ -397,7 +405,8 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                                                     values.doctorphone,
                                                     values.doctorcity,
                                                     values.doctoremail,
-                                                    values.doctorpassword
+                                                    values.doctorpassword,
+                                                    values.doctoraddress
                                                 )
                                             } else {
                                                 uploaddocfile(
@@ -405,7 +414,8 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                                                     values.doctorphone,
                                                     values.doctorcity,
                                                     values.doctoremail,
-                                                    values.doctorpassword
+                                                    values.doctorpassword,
+                                                    values.doctoraddress
                                                 )
                                             }
                                             // resetForm({})
@@ -423,7 +433,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                                         }) => (
                                             <SafeAreaView>
                                                 <ScrollView vertical showsVerticalScrollIndicator={true}>
-                                                    <View style={tw`h-230`}>
+                                                    <View style={tw`h-250`}>
                                                         <Screensheader
                                                             name={docid ? "UPDATE HOSPITAL" : "ADD HOSPITAL"}
                                                             left={15}
@@ -484,7 +494,19 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                                                                 />
                                                             </View>
 
-                                                            <View style={tw`top-8`}>
+                                                            <View style={tw`top-6`}>
+                                                                <Input1
+                                                                    placeholder="Enter Hospital Address"
+
+                                                                    onchangetext={handleChange('doctoraddress')}
+                                                                    onblur={handleBlur('doctoraddress')}
+                                                                    value={values.doctoraddress}
+
+                                                                    error={touched.doctoraddress ? errors.doctoraddress : false}
+                                                                />
+                                                            </View>
+
+                                                            <View style={tw`top-6`}>
                                                                 <Input1
                                                                     placeholder="Enter City In Hospital Located"
 
@@ -496,7 +518,7 @@ const Addupdatesubadmin = ({ navigation, route }) => {
                                                                 />
                                                             </View>
 
-                                                            <View style={tw`top-8`}>
+                                                            <View style={tw`top-6`}>
                                                                 <Input1
                                                                     placeholder="Enter Hospital Account Email"
 
