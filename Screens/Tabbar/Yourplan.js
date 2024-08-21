@@ -11,13 +11,14 @@ import { db } from '../../Firebase';
 import Share from 'react-native-share';
 // import LinearGradient from 'react-native-linear-gradient'
 
-const Yourplan = ({ navigation }) => {
+const Yourplan = ({ navigation, route }) => {
+    const { catt } = route.params;
 
     const [name, setname] = useState("");
     const [device, setdevice] = useState([]);
     const [session, setsession] = useState("");
     const [price, setprice] = useState("");
-    const [cat, setcat] = useState("All Doc")
+    const [cat, setcat] = useState(catt)
 
     const [userflag, setuserflag] = useState("");
 
@@ -33,28 +34,39 @@ const Yourplan = ({ navigation }) => {
     const [GetData1, setGetData1] = useState([]);
 
     useEffect(() => {
+        console.log("check catt", catt);
 
-        AsyncStorage.getItem("email").then((email) => {
-            AsyncStorage.getItem("role").then((role) => {
-                AsyncStorage.getItem("city").then((city) => {
-                    const coll = collection(db, 'Profile');
-                    const q = query(coll, where('ownemail', '==', email), where('role', '==', "doctor"));
-                    const q1 = query(coll, where('city', '==', city), where('role', '==', "doctor"));
+        catt ?
+            (
+                getdatabycat(catt),
+                setcat(catt)
+            )
+            :
+            (
+                setcat(catt),
+                AsyncStorage.getItem("email").then((email) => {
+                    AsyncStorage.getItem("role").then((role) => {
+                        AsyncStorage.getItem("city").then((city) => {
+                            const coll = collection(db, 'Profile');
+                            const q = query(coll, where('ownemail', '==', email), where('role', '==', "doctor"));
+                            const q1 = query(coll, where('city', '==', city), where('role', '==', "doctor"));
 
-                    const unSubscribe = onSnapshot(role === "user" ? q1 : q, snapshot => {
-                        setGetData(
-                            snapshot.docs.map(doc => ({
-                                selecteduser: doc.data(),
-                            })),
-                        );
-                    });
-                    return () => {
-                        unSubscribe();
-                    };
+                            const unSubscribe = onSnapshot(role === "user" ? q1 : q, snapshot => {
+                                setGetData(
+                                    snapshot.docs.map(doc => ({
+                                        selecteduser: doc.data(),
+                                    })),
+                                );
+                            });
+                            return () => {
+                                unSubscribe();
+                                setcat("")
+                            };
+                        })
+                    })
                 })
-            })
-        })
-    }, []);
+            )
+    }, [route.params]);
 
     const [allSlots, setAllSlots] = useState([]);
 

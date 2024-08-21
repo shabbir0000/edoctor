@@ -218,11 +218,31 @@ const Sessions = ({ navigation, route }) => {
 
 
     const showtodayappointment = async () => {
-        console.log("date today",showdate);
-        
+        console.log("date today", showdate);
+
         AsyncStorage.getItem("email").then((email) => {
             const coll = collection(db, 'Appointment');
             const q = query(coll, where('email', '==', email), where('bookdate', '==', showdate));
+
+            const unSubscribe = onSnapshot(q, snapshot => {
+                setGetData(
+                    snapshot.docs.map(doc => ({
+                        selecteduser: doc.data(),
+                    })),
+                );
+            });
+            return () => {
+                unSubscribe();
+            };
+        })
+    }
+
+    const showemergency = async () => {
+        console.log("date today", showdate);
+
+        AsyncStorage.getItem("email").then((email) => {
+            const coll = collection(db, 'Emergency');
+            const q = query(coll, where('email', '==', email), where('todaydate', '==', showdate));
 
             const unSubscribe = onSnapshot(q, snapshot => {
                 setGetData(
@@ -564,6 +584,10 @@ const Sessions = ({ navigation, route }) => {
             url: "https://images.inc.com/uploaded_files/image/1920x1080/getty_921019710_413686.jpg",
             text: "All"
         },
+        {
+            url: "https://images.inc.com/uploaded_files/image/1920x1080/getty_921019710_413686.jpg",
+            text: "Emergency"
+        },
 
     ];
 
@@ -608,15 +632,19 @@ const Sessions = ({ navigation, route }) => {
                                                                 if (item.text === "All") {
                                                                     showallappointment()
                                                                     setcat(item.text)
-                                                                } else {
+                                                                } else if (item.text === "Today") {
+
                                                                     showtodayappointment()
+                                                                    setcat(item.text)
+                                                                } else {
+                                                                    showemergency()
                                                                     setcat(item.text)
                                                                 }
 
                                                             }}>
-                                                            <View style={[tw`bg-${cat === item.text ? 'blue-400' : 'white'} h-10 w-30 ml-10 border flex-row items-center justify-evenly rounded-3xl`, { borderRadius: 50, borderColor: '#00B1E7' }]}>
-                                                                <Image style={tw`h-5 w-5 rounded-full`} source={{ uri: item.url }} />
-                                                                <Text numberOfLines={1} style={tw`text-center text-${cat === item.text ? "white" : "black"} w-18`}>{item.text}</Text>
+                                                            <View style={[tw`bg-${cat === item.text ? 'blue-400' : 'white'} h-10 w-25 ml-5 border flex-row items-center justify-evenly rounded-3xl`, { borderRadius: 50, borderColor: '#00B1E7' }]}>
+                                                                {/* <Image style={tw`h-5 w-5 rounded-full`} source={{ uri: item.url }} /> */}
+                                                                <Text numberOfLines={1} style={tw`text-center text-${cat === item.text ? "white" : "black"} w-20`}>{item.text}</Text>
                                                             </View>
                                                         </TouchableOpacity>
 
@@ -628,7 +656,7 @@ const Sessions = ({ navigation, route }) => {
                                             </ScrollView>
                                         </View>
 
-                                        <ScrollView style={tw`flex-1 mb-5 self-center `} showsVerticalScrollIndicator={false}>
+                                        <ScrollView style={tw`flex-1 mb-5 self-center`} showsVerticalScrollIndicator={false}>
 
                                             {
                                                 GetData.map((data, index) => (
@@ -636,7 +664,7 @@ const Sessions = ({ navigation, route }) => {
                                                         disabled={true}
                                                         key={index}
                                                     >
-                                                        <View style={[tw`border flex-col justify-center  items-center w-80 h-45 rounded-md self-center mt-5`, { borderColor: "#00B1E7" }]}>
+                                                        <View style={[tw`border flex-col justify-center  items-center w-80 h-${cat === "Emergency ? '40' : '45'"} rounded-md self-center mt-5`, { borderColor: "#00B1E7" }]}>
 
 
                                                             <View key={index} style={[tw` flex-row justify-around  items-center  w-80 h-35  self-center `]}>
@@ -651,7 +679,7 @@ const Sessions = ({ navigation, route }) => {
 
 
                                                                     <Text numberOfLines={1} style={tw`font-bold w-30 text-xl`}>{data.selecteduser.doctorname}</Text>
-                                                                    <Text numberOfLines={1} style={tw`font-light mt-2 w-30 text-gray-400 text-base`}>{data.selecteduser.doctortypelabel}</Text>
+                                                                    <Text numberOfLines={1} style={tw`font-light mt-2 w-30 text-gray-400 text-base`}>{data.selecteduser.doctortypelabel ? data.selecteduser.doctortypelabel : data.selecteduser.status.toUpperCase()}</Text>
 
                                                                     <Text numberOfLines={1} style={tw`font-medium mt-2  w-30 text-gray-400 text-base`}>From {data.selecteduser.doctortimefromlabel}</Text>
                                                                     <Text numberOfLines={1} style={tw`font-medium mt-2  w-30 text-gray-400 text-base`}>To {data.selecteduser.doctortimetolabel}</Text>
@@ -659,14 +687,19 @@ const Sessions = ({ navigation, route }) => {
 
 
                                                             </View>
+                                                            {
+                                                                cat === "Emergency" ?
+                                                                    <></>
+                                                                    :
+                                                                    <View style={tw`h-10  justify-around items-start flex-row w-75`}>
+                                                                        <Text numberOfLines={1} style={tw`font-normal  text-base`}>{data.selecteduser.bookdate}</Text>
+                                                                        <Text numberOfLines={1} style={tw`font-normal   text-sm`}>{data.selecteduser.bookstime} To {data.selecteduser.booketime} </Text>
+                                                                        {/* <Text numberOfLines={1} style={tw`font-normal text-green-500   text-base`}>{data.selecteduser.status.toUpperCase()}</Text> */}
 
-                                                            <View style={tw`h-10  justify-around items-start flex-row w-75`}>
-                                                                <Text numberOfLines={1} style={tw`font-normal  text-base`}>{data.selecteduser.bookdate}</Text>
-                                                                <Text numberOfLines={1} style={tw`font-normal   text-sm`}>{data.selecteduser.bookstime} To {data.selecteduser.booketime} </Text>
-                                                                {/* <Text numberOfLines={1} style={tw`font-normal text-green-500   text-base`}>{data.selecteduser.status.toUpperCase()}</Text> */}
 
+                                                                    </View>
+                                                            }
 
-                                                            </View>
                                                             {/* <TouchableOpacity>
                                                         <View style={tw` rounded-md bg-slate-200 w-70 items-center justify-center h-10 mt-5 `}>
 

@@ -26,6 +26,7 @@ const Showappointments = ({ navigation, route }) => {
     const [userflag, setuserflag] = useState(usercontrol);
     const [loading, setloading] = useState(false);
     const [loading1, setloading1] = useState(false);
+    const [loading2, setloading2] = useState(false);
     const [GetData, setGetData] = useState([]);
     const [GetData1, setGetData1] = useState([]);
     const userid = uuid.v4();
@@ -165,7 +166,7 @@ const Showappointments = ({ navigation, route }) => {
 
 
 
-    const bookappointment = async (doctorname, doctorphone, monday, tuesday, wednesday, thursday, friday, saturday, sunday, label2, label, label1, url) => {
+    const bookappointment = async (doctorname, doctorphone,doctoremail, monday, tuesday, wednesday, thursday, friday, saturday, sunday, label2, label, label1, url) => {
         if (!doctorname || !doctorphone || !start || !end || !date) {
             showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
         }
@@ -175,6 +176,7 @@ const Showappointments = ({ navigation, route }) => {
             setDoc(doc(db, 'Appointment', userid), {
                 doctorname: doctorname,
                 doctorphone: doctorphone,
+                doctoremail : doctoremail,
                 doctortypelabel: label2,
                 username: GetData1[0].selecteduser.fullname,
                 phone: GetData1[0].selecteduser.phone,
@@ -202,6 +204,7 @@ const Showappointments = ({ navigation, route }) => {
                     setDoc(doc(db, 'Filledapp', userid), {
                         doctorname: doctorname,
                         doctorphone: doctorphone,
+                        doctoremail : doctoremail,
                         doctortypelabel: label2,
                         username: GetData1[0].selecteduser.fullname,
                         phone: GetData1[0].selecteduser.phone,
@@ -233,6 +236,48 @@ const Showappointments = ({ navigation, route }) => {
     };
 
 
+    const sendemergency = async (doctorname, doctorphone,doctoremail, label, label1, url) => {
+        if (!doctorname || !doctorphone) {
+            showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
+        }
+
+        else {
+            setloading2(true)
+            setDoc(doc(db, 'Emergency', userid), {
+                doctorname: doctorname,
+                doctorphone: doctorphone,
+                doctoremail : doctoremail,
+                username: GetData1[0].selecteduser.fullname,
+                phone: GetData1[0].selecteduser.phone,
+                city: GetData1[0].selecteduser.city,
+                doctortimefromlabel: label,
+                doctortimetolabel: label1,
+                status: "pending",
+                userid,
+                email: email,
+                todaydate: showdate,
+                timestamp: serverTimestamp(),
+                profile: url
+            })
+                .then(() => {
+                    console.log('done');
+
+                    setloading2(false)
+                    Alert.alert('Alert Has Been Send To Doctor', 'Please Check The Status On Booked Screen', [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('Home'),
+                        },
+                    ]);
+                })
+                .catch(error => {
+                    setloading2(false)
+                    // console.log(error);
+                    Alert.alert('this :', error.message);
+                });
+
+        }
+    };
     // useEffect(() => {
     //     if (!userflag) {
     //         showtodayappointment()
@@ -352,8 +397,7 @@ const Showappointments = ({ navigation, route }) => {
                             />
 
 
-
-                            <ScrollView style={tw`flex-1 mb-5 self-center `} showsVerticalScrollIndicator={false}>
+                            <ScrollView style={tw`flex-1 mb-3 self-center `} showsVerticalScrollIndicator={false}>
                                 {
 
                                     GetData.map((data, index) => (
@@ -553,6 +597,7 @@ const Showappointments = ({ navigation, route }) => {
                                                             bookappointment(
                                                                 data.selecteduser.fullname,
                                                                 data.selecteduser.phone,
+                                                                data.selecteduser.email,
                                                                 data.selecteduser.monday,
                                                                 data.selecteduser.tuesday,
                                                                 data.selecteduser.wednesday,
@@ -572,6 +617,45 @@ const Showappointments = ({ navigation, route }) => {
 
                                                             <Text style={tw`text-white`}>
                                                                 BOOK APPOINMENT
+                                                            </Text>
+
+                                                        </View>
+                                                    </TouchableOpacity>
+                                            }
+
+                                            {
+                                                loading2 ?
+                                                    <ActivityIndicator style={tw`mt-5`} size={'large'} color={'blue'} />
+                                                    :
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            Alert.alert('Alert', 'Are You Sure You Want To Send Alert', [
+                                                                {
+                                                                    text: 'No',
+                                                                    onPress: () => console.log('Cancel Pressed'),
+                                                                    style: 'cancel',
+                                                                },
+                                                                {
+                                                                    text: 'Yes', onPress: () => {
+                                                                        sendemergency(
+                                                                            data.selecteduser.fullname,
+                                                                            data.selecteduser.phone,
+                                                                            data.selecteduser.email,
+                                                                            data.selecteduser.doctortimefromlabel,
+                                                                            data.selecteduser.doctortimetolabel,
+                                                                            data.selecteduser.profilephoto
+                                                                        )
+                                                                    }
+                                                                },
+                                                            ]);
+
+
+                                                        }}
+                                                    >
+                                                        <View style={tw` rounded-3xl bg-red-800  mt-5 w-80 self-center items-center justify-center h-10  `}>
+
+                                                            <Text style={tw`text-white`}>
+                                                                SEND EMERGENCY ALERT
                                                             </Text>
 
                                                         </View>

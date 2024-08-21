@@ -11,25 +11,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-const Showbalance = () => {
+const Showbalance = ({ navigation }) => {
 
 
     const data2 = [
-        { label: 'Cardiologist', image: 'https://example.com/cardiologist.png' },
-        { label: 'Dermatologist', image: 'https://example.com/dermatologist.png' },
-        { label: 'Neurologist', image: 'https://example.com/neurologist.png' },
-        { label: 'Orthopedic', image: 'https://example.com/orthopedic.png' },
-        { label: 'Pediatrician', image: 'https://example.com/pediatrician.png' },
-        { label: 'Psychiatrist', image: 'https://example.com/psychiatrist.png' },
-        { label: 'Radiologist', image: 'https://example.com/radiologist.png' },
-        { label: 'Urologist', image: 'https://example.com/urologist.png' },
-        { label: 'Gynecologist', image: 'https://example.com/gynecologist.png' },
-        { label: 'Ophthalmologist', image: 'https://example.com/ophthalmologist.png' },
-        { label: 'Anesthesiologist', image: 'https://example.com/anesthesiologist.png' },
-        { label: 'Oncologist', image: 'https://example.com/oncologist.png' },
-        { label: 'Pathologist', image: 'https://example.com/pathologist.png' },
-        { label: 'Rheumatologist', image: 'https://example.com/rheumatologist.png' },
-        { label: 'General Practitioner', image: 'https://example.com/general_practitioner.png' }
+        { label: 'Cardiologist', image: 'https://cdn-icons-png.flaticon.com/512/1546/1546124.png' },
+        { label: 'Dermatologist', image: 'https://static.vecteezy.com/system/resources/previews/019/761/802/non_2x/beauty-parlour-skincare-salon-spa-dermatology-clinic-logo-design-design-concept-free-vector.jpg' },
+        { label: 'Neurologist', image: 'https://c8.alamy.com/comp/2BKGHAK/brain-neurology-logo-2BKGHAK.jpg' },
+        { label: 'Orthopedic', image: 'https://static.vecteezy.com/system/resources/previews/017/438/838/non_2x/joint-bones-logo-design-for-orthopedic-clinics-free-vector.jpg' },
+        { label: 'Pediatrician', image: 'https://img.freepik.com/premium-vector/pediatrician-logo-template-design-vector_20029-1040.jpg' },
+        { label: 'Psychiatrist', image: 'https://cdn.vectorstock.com/i/500p/20/78/human-head-logo-psychological-vector-46552078.jpg' },
+        { label: 'Radiologist', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7PfK0wtBEPywVa4Unlx6Ilb7r2_9qZoVhiA&s' },
+        { label: 'Urologist', image: 'https://cdn.vectorstock.com/i/500p/43/52/urology-logo-vector-46474352.jpg' },
+        { label: 'Gynecologist', image: 'https://w7.pngwing.com/pngs/621/257/png-transparent-obstetrics-and-gynaecology-obstetrics-and-gynaecology-clinic-hospital-obstetrics-s-purple-blue-text-thumbnail.png' },
+        { label: 'Pathologist', image: 'https://static.vecteezy.com/system/resources/thumbnails/021/599/743/small/the-logo-for-a-science-laboratory-is-called-a-microscope-vector.jpg' },
+        { label: 'General', image: 'https://w7.pngwing.com/pngs/206/469/png-transparent-health-care-physician-surgery-surgeon-medicine-general-practitioner.png' }
     ];
 
 
@@ -112,41 +108,51 @@ const Showbalance = () => {
 
 
             </LinearGradient>
+            {
+                userflag === "user" ?
+                    <View
+                        style={tw`w-85 h-20 mt-12  flex-row  self-center  items-center`}>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            {/* card 1 */}
 
-            <View
-                style={tw`w-85 h-12 mt-10  flex-row  self-center  items-center`}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {/* card 1 */}
-
-                    <>
-
-
-                        {data2?.map((item, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                onPress={() => {
-                                    // setloading(true)
-                                    // getcatvideo(item.id)
-                                    getdatabycat(item.label)
-                                    setcat(item.label)
-                                }}>
-                                <View style={[tw`h-10 w-30 ml-5  flex-col items-center justify-evenly `]}>
-                                    <Image style={tw`h-5 w-5  rounded-full `} source={{ uri: item.image }} />
-                                    <Text numberOfLines={1} style={tw`text-center text-black w-20`}>{item.label}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                        ))
-                        }
+                            <>
 
 
+                                {data2?.map((item, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+
+                                        onPress={() => {
+                                            // console.log(item.label);
+
+                                            navigation.navigate('Yourplan', {
+                                                catt: item.label
+                                            })
+                                        }}
+
+                                    >
+                                        <View style={[tw`h-20 w-30 ml-3  flex-col items-center justify-evenly `]}>
+                                            <Image style={tw`h-15 w-15  rounded-full `} source={{ uri: item.image }} />
+                                            <Text numberOfLines={1} style={tw`text-center text-black w-25`}>{item.label}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+
+                                ))
+                                }
 
 
-                    </>
 
 
-                </ScrollView>
-            </View>
+                            </>
+
+
+                        </ScrollView>
+                    </View>
+                    :
+                    <></>
+
+            }
+
 
         </>
     )

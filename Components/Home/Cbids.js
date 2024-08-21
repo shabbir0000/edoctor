@@ -125,11 +125,13 @@ const Cbids = ({ navigation }) => {
           :
           userflag === "user" ?
             <>
-              <View style={tw` h-7 w-80 mt-15 self-center flex-row justify-between items-center`}>
+              <View style={tw` h-7 w-80 mt-5 self-center flex-row justify-between items-center`}>
                 <Text style={tw`text-base font-bold`}>Top Doctors</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('Yourplan')
+                    navigation.navigate('Yourplan',{
+                      catt : ""
+                    })
                   }}
                 >
                   <Text style={tw`text-base text-green-500 font-semibold`}>See All</Text>

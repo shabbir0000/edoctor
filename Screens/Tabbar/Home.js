@@ -14,6 +14,10 @@ import { db } from '../../Firebase';
 const Home = ({ navigation, route }) => {
   const [userflag, setuserflag] = useState("");
   const [GetData, setGetData] = useState([]);
+  const [GetData1, setGetData1] = useState([]);
+  const [GetData2, setGetData2] = useState([]);
+  const datee = new Date();
+  const showdate = datee.getFullYear() + "/" + (datee.getMonth() + 1) + "/" + datee.getDate();
 
 
   useEffect(() => {
@@ -23,6 +27,47 @@ const Home = ({ navigation, route }) => {
 
     })
   }, [])
+
+
+  useEffect(() => {
+
+    AsyncStorage.getItem("email").then((email) => {
+      const coll = collection(db, 'Appointment');
+      const q = query(coll, where("bookdate", '==', showdate),where("doctoremail", '==', email));
+
+      const unSubscribe = onSnapshot(q, snapshot => {
+        setGetData1(
+          snapshot.docs.map(doc => ({
+            selecteduser: doc.data(),
+          })),
+        );
+      });
+      return () => {
+        unSubscribe();
+      };
+    })
+  }, []);
+
+
+  useEffect(() => {
+
+    AsyncStorage.getItem("email").then((email) => {
+      const coll = collection(db, 'Emergency');
+      const q = query(coll, where("doctoremail", '==', email), where("todaydate", '==', showdate));
+
+      const unSubscribe = onSnapshot(q, snapshot => {
+        setGetData2(
+          snapshot.docs.map(doc => ({
+            selecteduser: doc.data(),
+          })),
+        );
+      });
+      return () => {
+        unSubscribe();
+      };
+    })
+  }, []);
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -162,17 +207,91 @@ const Home = ({ navigation, route }) => {
           :
           userflag === "subadmin" || userflag === "user" ?
             <View style={[tw`flex-1`, { backgroundColor: '#FFFFFF' }]}>
-              <ScrollView  showsVerticalScrollIndicator={false}>
-                <Menuchatbar navigation={navigation} />
-                <Showbalance />
+              {
+                userflag === "user" ?
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <Menuchatbar navigation={navigation} />
+                    <Showbalance navigation={navigation} />
 
 
-                <Cbids navigation={navigation} />
-              </ScrollView>
+                    <Cbids navigation={navigation} />
+                  </ScrollView>
+                  :
+                  <>
+                    <Menuchatbar navigation={navigation} />
+                    <Showbalance navigation={navigation} />
+
+
+                    <Cbids navigation={navigation} />
+                  </>
+              }
+
             </View>
             :
             userflag === "doctor" ?
-              <></>
+              <>
+                <View style={tw`flex-1 items-center bg-white justify-around`}>
+                  <Menuchatbar navigation={navigation} />
+                  <LinearGradient colors={['#00B1E7', '#00B1E7']} style={tw` flex flex-row items-center justify-around self-center h-30 w-85 rounded-xl`} >
+
+
+                    {/* // balance dev */}
+                    <View style={tw`w-50 left-3`} >
+                      <Text
+                        numberOfLines={2}
+                        style={tw`text-xl font-bold  text-gray-100`}>
+                        {`Hello Dear Doctor`}
+
+                      </Text>
+                      <Text
+                        numberOfLines={4}
+                        style={tw`text-xl font-bold  text-gray-100`}>
+                        {`Your Are The \nBeckbone Of Us`}
+                      </Text>
+                    </View>
+
+
+                    {/* graph  */}
+                    <View style={tw` h-30 w-30  justify-center self-center items-center `}>
+                      <Image
+                        style={tw`h-29 w-30 rounded-2xl `}
+                        resizeMode='contain'
+                        source={require("../../Images/help.png")}
+                      />
+                    </View>
+
+
+                  </LinearGradient>
+
+                  <View style={tw` h-40 w-50 border-black items-center self-center `}>
+
+                    <LottieView
+                      style={tw`self-center  w-50 h-40`}
+                      source={require('../../Images/Animation - 1724273800760.json')}
+                      autoPlay
+                      loop={true}
+                      speed={0.9}
+                    />
+                  </View>
+
+                  <View style={tw` items-center justify-around w-80 h-30 self-center flex-row `}>
+                    <View
+                      style={[tw`shadow-xl w-30 h-30 items-center justify-center self-center`, { backgroundColor: '#00B1E7' }]}>
+                      <Text style={tw`text-white text-lg font-bold`}>Current Emergency</Text>
+
+                      <Text style={tw`text-lg text-white`}>{GetData1.length} </Text>
+                    </View>
+
+                    <View
+                      style={[tw`shadow-xl bg-blue-500 w-30 h-30  items-center justify-center self-center`, { backgroundColor: '#00B1E7' }]}>
+                      <Text style={tw`text-white text-lg font-bold`}>Today Appoinment</Text>
+                      <Text style={tw`text-lg text-white`}>{GetData2.length}</Text>
+                    </View>
+
+
+                  </View>
+                </View>
+              </>
               :
               <></>
       }

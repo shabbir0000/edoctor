@@ -90,11 +90,11 @@ const Profile = ({ navigation }) => {
             )}
           />
 
-          <Options text={"Chat With Us"} top={7} top1={5} flag={true} left={51}
+          {/* <Options text={"Chat With Us"} top={7} top1={5} flag={true} left={51}
             onPress={() => (
               Linking.openURL(`whatsapp://send?text=Hello\nI Have Query&phone=${"03342788001"}`)
             )}
-          />
+          /> */}
           {/* <Options text={"App Version"} top={7} top1={5} flag={false} text1={1.1} logo={false} left={55} /> */}
 
           <Options text={"Logout"} top={7} top1={5} flag={true} logo={false} left={65}

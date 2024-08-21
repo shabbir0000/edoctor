@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import Category from "./Category";
 import Allhospitals from "../Tabbar/Allhospitals";
+import Bookedappointment from "../../Components/Doctors/Bookedappointment";
 const Tab = createBottomTabNavigator();
 
 function Tabbar() {
@@ -85,10 +86,36 @@ function Tabbar() {
                 />
             }
 
+{
+                userflag === "doctor" &&
+                <Tab.Screen
+                    options={{
+                        tabBarLabel: 'Appoinments',
+
+                        tabBarIcon: ({ focused }) => (
+                            <Image style={tw`h-8 w-8`} source={focused ? require("../../Images/to-do-listb.png") : require("../../Images/to-do-list.png")} />
+                        ),
+                    }}
+                    name="Appoinments"
+                    component={Bookedappointment}
+                />
+            }
+
             {
                 userflag === "user" || userflag === "subadmin" ?
                     <>
                         <Tab.Screen
+                        listeners={({ navigation }) => ({
+                            tabPress: (e) => {
+                                // Prevent default behavior
+                                e.preventDefault();
+
+                                // Generate a new key to force re-render
+                                navigation.navigate('Yourplan', {
+                                  catt : ""
+                                });
+                            },
+                        })}
                             name="Yourplan"
                             options={{
 
