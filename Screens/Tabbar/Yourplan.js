@@ -48,7 +48,7 @@ const Yourplan = ({ navigation, route }) => {
                     AsyncStorage.getItem("role").then((role) => {
                         AsyncStorage.getItem("city").then((city) => {
                             const coll = collection(db, 'Profile');
-                            const q = query(coll, where('ownemail', '==', email), where('role', '==', "doctor"));
+                            const q = query(coll,where('ownemail', '==', email),where('city', '==', city), where('role', '==', "doctor"));
                             const q1 = query(coll, where('city', '==', city), where('role', '==', "doctor"));
 
                             const unSubscribe = onSnapshot(role === "user" ? q1 : q, snapshot => {
@@ -77,7 +77,7 @@ const Yourplan = ({ navigation, route }) => {
         AsyncStorage.getItem("email").then((email) => {
             AsyncStorage.getItem("city").then((city) => {
                 const coll = collection(db, 'Profile');
-                const q = query(coll, where('city', '==', city), where('role', '==', "doctor"), where('doctortypelabel', '==', cat));
+                const q = query(coll,where('ownemail', '==', email), where('city', '==', city), where('role', '==', "doctor"), where('doctortypelabel', '==', cat));
 
                 const unSubscribe = onSnapshot(q, snapshot => {
                     setGetData(
@@ -97,7 +97,7 @@ const Yourplan = ({ navigation, route }) => {
         AsyncStorage.getItem("city").then((city) => {
             const coll = collection(db, 'Profile');
             // const q = query(coll, where('doctortypelabel', '==', cat));
-            const q = query(coll, where('city', '==', city), where('role', '==', "doctor"));
+            const q = query(coll,where('ownemail', '==', email), where('city', '==', city), where('role', '==', "doctor"));
             const unSubscribe = onSnapshot(q, snapshot => {
                 setGetData(
                     snapshot.docs.map(doc => ({
@@ -472,17 +472,18 @@ const Yourplan = ({ navigation, route }) => {
 
                                                     </View>
 
-                                                    {/* <TouchableOpacity
+                                                    <TouchableOpacity
                                                         onPress={() => {
                                                             navigation.navigate("Showappoinments", {
-                                                                phone: data.selecteduser.doctorphone,
+                                                                phone: data.selecteduser.phone,
                                                                 slots: data.selecteduser.slots,
-                                                                usercontrol : true,
+                                                                usercontrol: true
+                                                               
                                                             })
                                                         }}
                                                     >
-                                                        <Text numberOfLines={1} style={tw`font-light mt-1 w-40 text-black underline text-base`}>Fill The Own Slots</Text>
-                                                    </TouchableOpacity> */}
+                                                        <Text numberOfLines={1} style={tw`font-light mt-1 w-40 text-black underline text-base`}>Book Appointment</Text>
+                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
                                         </TouchableOpacity>

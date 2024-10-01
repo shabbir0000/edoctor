@@ -16,6 +16,7 @@ import Showvideo from '../../Components/Session/Showvideo';
 import Showappoinments from '../../Components/Session/Showappoinments';
 import Addupdatesubadmin from '../../Components/Adminscreen/Addupdatesubadmin';
 import Hospitaldetail from '../../Components/Hospitals/Hospitaldetail';
+import Addrecep from './Addrecep';
 
 // import Home from '../Bottomtabs/Home';
 // import Tabbar from './Tabbar';
@@ -59,6 +60,7 @@ function Navigation() {
         <Stack.Screen name='Showappoinments' component={Showappoinments} />
         <Stack.Screen name='Addupdatesubadmin' component={Addupdatesubadmin} />
         <Stack.Screen name='Hospitaldetail' component={Hospitaldetail} />
+        <Stack.Screen name='Addrecep' component={Addrecep} />
         {/* <Stack.Screen name="Viewcatproduct" component={Viewcatproduct} /> */}
         {/* <Stack.Screen options={{
            cardStyle: { backgroundColor: '#fffff' }

@@ -205,7 +205,7 @@ const Home = ({ navigation, route }) => {
             </View>
           </>
           :
-          userflag === "subadmin" || userflag === "user" ?
+          userflag === "subadmin" || userflag === "user" ||  userflag === "receptionist"?
             <View style={[tw`flex-1`, { backgroundColor: '#FFFFFF' }]}>
               {
                 userflag === "user" ?

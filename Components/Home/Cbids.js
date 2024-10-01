@@ -75,9 +75,9 @@ const Cbids = ({ navigation }) => {
 
   useEffect(() => {
 
-    AsyncStorage.getItem("email").then((email) => {
+    AsyncStorage.getItem("city").then((city) => {
       const coll = collection(db, 'Profile');
-      const q = query(coll, where("ownemail", '==', email), where("role", '==', "doctor"));
+      const q = query(coll,where('city', '==', city), where("role", '==', "doctor"));
 
       const unSubscribe = onSnapshot(q, snapshot => {
         setGetData2(
@@ -240,7 +240,7 @@ const Cbids = ({ navigation }) => {
 
                 <View
                   style={[tw`shadow-xl bg-blue-500 w-30 h-30  items-center justify-center self-center`, { backgroundColor: '#00B1E7' }]}>
-                  <Text style={tw`text-white text-lg font-bold`}>My Total {'\n'}Doctors</Text>
+                  <Text style={tw`text-white text-lg font-bold`}>Total {'\n'}Doctors</Text>
                   <Text style={tw`text-lg text-white`}>{GetData2.length}</Text>
                 </View>
 
