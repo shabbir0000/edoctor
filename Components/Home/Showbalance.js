@@ -15,17 +15,21 @@ const Showbalance = ({ navigation }) => {
 
 
     const data2 = [
-        { label: 'Cardiologist', image: 'https://cdn-icons-png.flaticon.com/512/1546/1546124.png' },
-        { label: 'Dermatologist', image: 'https://static.vecteezy.com/system/resources/previews/019/761/802/non_2x/beauty-parlour-skincare-salon-spa-dermatology-clinic-logo-design-design-concept-free-vector.jpg' },
-        { label: 'Neurologist', image: 'https://c8.alamy.com/comp/2BKGHAK/brain-neurology-logo-2BKGHAK.jpg' },
-        { label: 'Orthopedic', image: 'https://static.vecteezy.com/system/resources/previews/017/438/838/non_2x/joint-bones-logo-design-for-orthopedic-clinics-free-vector.jpg' },
-        { label: 'Pediatrician', image: 'https://img.freepik.com/premium-vector/pediatrician-logo-template-design-vector_20029-1040.jpg' },
-        { label: 'Psychiatrist', image: 'https://cdn.vectorstock.com/i/500p/20/78/human-head-logo-psychological-vector-46552078.jpg' },
-        { label: 'Radiologist', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7PfK0wtBEPywVa4Unlx6Ilb7r2_9qZoVhiA&s' },
-        { label: 'Urologist', image: 'https://cdn.vectorstock.com/i/500p/43/52/urology-logo-vector-46474352.jpg' },
-        { label: 'Gynecologist', image: 'https://w7.pngwing.com/pngs/621/257/png-transparent-obstetrics-and-gynaecology-obstetrics-and-gynaecology-clinic-hospital-obstetrics-s-purple-blue-text-thumbnail.png' },
-        { label: 'Pathologist', image: 'https://static.vecteezy.com/system/resources/thumbnails/021/599/743/small/the-logo-for-a-science-laboratory-is-called-a-microscope-vector.jpg' },
-        { label: 'General', image: 'https://w7.pngwing.com/pngs/206/469/png-transparent-health-care-physician-surgery-surgeon-medicine-general-practitioner.png' }
+        { label: 'Heart Pain',label1: 'Cardiologist', image: 'https://cdn-icons-png.flaticon.com/512/1546/1546124.png' },
+        { label: 'Face Acne',label1: 'Dermatologist', image: 'https://static.vecteezy.com/system/resources/previews/019/761/802/non_2x/beauty-parlour-skincare-salon-spa-dermatology-clinic-logo-design-design-concept-free-vector.jpg' },
+        { label: 'Headache',label1: 'Neurologist', image: 'https://c8.alamy.com/comp/2BKGHAK/brain-neurology-logo-2BKGHAK.jpg' },
+        { label: 'Joint Pain',label1: 'Orthopedic', image: 'https://static.vecteezy.com/system/resources/previews/017/438/838/non_2x/joint-bones-logo-design-for-orthopedic-clinics-free-vector.jpg' },
+         
+        { label: 'Baby Doctor',label1: 'Pediatrician', image: 'https://img.freepik.com/premium-vector/pediatrician-logo-template-design-vector_20029-1040.jpg' },
+        { label: 'Feel Depressed',label1: 'Psychiatrist', image: 'https://cdn.vectorstock.com/i/500p/20/78/human-head-logo-psychological-vector-46552078.jpg' },
+        { label: 'UltraSound',label1: 'Radiologist', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7PfK0wtBEPywVa4Unlx6Ilb7r2_9qZoVhiA&s' },
+        { label: 'Bones Pain',label1: 'Orthopedic', image: 'https://static.vecteezy.com/system/resources/previews/017/438/838/non_2x/joint-bones-logo-design-for-orthopedic-clinics-free-vector.jpg' },
+        { label: 'Urine Issue',label1: 'Urologist', image: 'https://cdn.vectorstock.com/i/500p/43/52/urology-logo-vector-46474352.jpg' },
+        { label: 'Gynecologist',label1: 'Gynecologist', image: 'https://w7.pngwing.com/pngs/621/257/png-transparent-obstetrics-and-gynaecology-obstetrics-and-gynaecology-clinic-hospital-obstetrics-s-purple-blue-text-thumbnail.png' },
+        { label: 'Allergy',label1: 'General', image: 'https://static.vecteezy.com/system/resources/thumbnails/021/599/743/small/the-logo-for-a-science-laboratory-is-called-a-microscope-vector.jpg' },
+        { label: 'Fever',label1: 'General', image: 'https://w7.pngwing.com/pngs/206/469/png-transparent-health-care-physician-surgery-surgeon-medicine-general-practitioner.png' },
+        { label: 'Migrane Issue',label1: 'Neurologist', image: 'https://cdn.vectorstock.com/i/500p/20/78/human-head-logo-psychological-vector-46552078.jpg' },
+    
     ];
 
 
@@ -110,8 +114,13 @@ const Showbalance = ({ navigation }) => {
             </LinearGradient>
             {
                 userflag === "user" ?
-                    <View
-                        style={tw`w-85 h-20 mt-12  flex-row  self-center  items-center`}>
+                <>
+                     <View
+                        style={tw`w-85 h-25 mt-12 `}>
+                            <Text style={tw`text-lg ml-5 font-bold text-black`}> Symptoms </Text>
+                
+                        <View style={tw` flex-row  self-center mt-3  items-center`}>  
+                            
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {/* card 1 */}
 
@@ -126,7 +135,7 @@ const Showbalance = ({ navigation }) => {
                                             // console.log(item.label);
 
                                             navigation.navigate('Yourplan', {
-                                                catt: item.label
+                                                catt: item.label1
                                             })
                                         }}
 
@@ -147,7 +156,9 @@ const Showbalance = ({ navigation }) => {
 
 
                         </ScrollView>
+                        </View>
                     </View>
+                 </>
                     :
                     <></>
 

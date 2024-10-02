@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Navigation from './Screens/Universal/Navigation'
 import Navigationwl from './Screens/Universal/Navigationwl'
-// import { AppProvider } from './AppContext'
+import { AppProvider } from './AppContext'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const App = () => {
@@ -31,13 +31,13 @@ const App = () => {
          <ActivityIndicator style={{flex:1, justifyContent:'center' , alignSelf:'center'}} size={'large'}/>
         :
         id ?
-          // <AppProvider>
+          <AppProvider>
             <Navigation />
-          // </AppProvider>
+           </AppProvider>
           :
-          // <AppProvider>
+           <AppProvider>
             <Navigationwl />
-          // </AppProvider>
+            </AppProvider>
       }
 
     </>

@@ -35,9 +35,9 @@ const Cbids = ({ navigation }) => {
 
   useEffect(() => {
 
-    AsyncStorage.getItem("email").then((email) => {
+    AsyncStorage.getItem("city").then((city) => {
       const coll = collection(db, 'Profile');
-      const q = query(coll, where("role", '==', "doctor"), limit(4));
+      const q = query(coll, where("city", '==',city), where("role", '==', "doctor"), limit(4));
 
       const unSubscribe = onSnapshot(q, snapshot => {
         setGetData(

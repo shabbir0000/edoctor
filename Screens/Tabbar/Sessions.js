@@ -417,7 +417,7 @@ const Sessions = ({ navigation, route }) => {
                 fullname: doctorname,
                 phone: doctorphone,
                 email: doctoremail.toLowerCase().trim(),
-                city: doctorcity.toLowerCase().trim(),
+                city: GetData1[0].selecteduser.city,
                 hospitalname: GetData1[0].selecteduser.fullname,
                 hospitalphone: GetData1[0].selecteduser.phone,
                 hospitaladdress: GetData1[0].selecteduser.address,
@@ -449,7 +449,7 @@ const Sessions = ({ navigation, route }) => {
                         fullname: doctorname,
                         phone: doctorphone,
                         email: doctoremail.toLowerCase().trim(),
-                        city: doctorcity.toLowerCase().trim(),
+                        city: GetData1[0].selecteduser.city,
                         hospitalname: GetData1[0].selecteduser.fullname,
                         hospitalphone: GetData1[0].selecteduser.phone,
                         hospitaladdress: GetData1[0].selecteduser.address,
@@ -536,7 +536,7 @@ const Sessions = ({ navigation, route }) => {
             fullname: doctorname,
             phone: doctorphone,
             email: doctoremail.toLowerCase().trim(),
-            city: doctorcity.toLowerCase().trim(),
+            city: GetData1[0].selecteduser.city,
             hospitalname: GetData1[0].selecteduser.fullname,
             hospitalphone: GetData1[0].selecteduser.phone,
             hospitaladdress: GetData1[0].selecteduser.address,
@@ -833,7 +833,8 @@ const Sessions = ({ navigation, route }) => {
 
                                                                     <View style={tw`top-5`}>
                                                                         <Input1
-                                                                            placeholder="Add Doctor City"
+                                                                            edit={false}
+                                                                            placeholder={GetData1[0]?.selecteduser.city}
                                                                             onchangetext={handleChange('doctorcity')}
                                                                             onblur={handleBlur('doctorcity')}
                                                                             value={values.doctorcity}

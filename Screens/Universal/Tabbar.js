@@ -13,6 +13,7 @@ import Category from './Category';
 import Allhospitals from '../Tabbar/Allhospitals';
 import Bookedappointment from '../../Components/Doctors/Bookedappointment';
 import Receptionist from '../Tabbar/Receptionist';
+import Addaccounts from '../Tabbar/Addaccounts';
 const Tab = createBottomTabNavigator();
 
 function Tabbar() {
@@ -263,24 +264,51 @@ function Tabbar() {
       ) : (
         <>
           {userflag !== 'receptionist' && (
-            <Tab.Screen
-              options={{
-                tabBarLabel: 'Manage',
+            <>
+              <Tab.Screen
+                options={{
+                  tabBarLabel: 'Manage',
 
-                tabBarIcon: ({focused}) => (
-                  <Image
-                    style={tw`h-7 w-7 top-1`}
-                    source={
-                      focused
-                        ? require('../../Images/to-do-listb.png')
-                        : require('../../Images/to-do-list.png')
-                    }
-                  />
-                ),
-              }}
-              name="Category"
-              component={Category}
-            />
+                  tabBarIcon: ({focused}) => (
+                    <Image
+                      style={tw`h-8 w-8 `}
+                      source={
+                        focused
+                          ? require('../../Images/to-do-listb.png')
+                          : require('../../Images/to-do-list.png')
+                      }
+                    />
+                  ),
+                }}
+                name="Category"
+                component={Category}
+              />
+              {userflag !== 'doctor' && (
+                <Tab.Screen
+                  name="Addaccount"
+                  options={{
+                    tabBarLabel: 'Addaccount',
+                    // tabBarLabelStyle: {
+                    //   color: '#F8FAFC',
+                    // },
+                    tabBarStyle: {
+                      backgroundColor: '#F8FAFC',
+                    },
+                    tabBarIcon: ({focused}) => (
+                      <Image
+                        style={tw`h-8 w-8`}
+                        source={
+                          focused
+                            ? require('../../Images/bankg.png')
+                            : require('../../Images/bank.png')
+                        }
+                      />
+                    ),
+                  }}
+                  component={Addaccounts}
+                />
+              )}
+            </>
           )}
         </>
       )}
