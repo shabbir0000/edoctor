@@ -33,6 +33,7 @@ import uuid from 'react-native-uuid';
 import {showToast} from '../../Screens/Universal/Input';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import storage from '@react-native-firebase/storage';
 
 const Companysymptoms = ({navigation}) => {
   const [categories, setCategories] = useState([
@@ -175,8 +176,8 @@ const EvenOddColumns = ({data, navigation}) => {
   }, []);
 
   const uploadfile = async () => {
-    if (!imglink1 || !comapny) {
-      showToast('error', 'Error', 'Please Select The Image First', true, 3000);
+    if (!imglink1 || !comapny || !value2) {
+      showToast('error', 'Error', 'Please Fill All The Feild First', true, 3000);
     } else {
       try {
         setloading(true);
@@ -186,7 +187,7 @@ const EvenOddColumns = ({data, navigation}) => {
         console.log('your file is locating :', url);
         addcat(url);
       } catch (error) {
-        showModal;
+       
         setloading(false);
         console.log('Error :', error);
       }
@@ -204,6 +205,8 @@ const EvenOddColumns = ({data, navigation}) => {
         userid,
         timestamp: serverTimestamp(),
         img: url,
+        catl : label2,
+        catv: value2
       })
         .then(() => {
           setloading(false);
@@ -230,18 +233,18 @@ const EvenOddColumns = ({data, navigation}) => {
       updateCat(url);
     } else {
       try {
-        showModal;
+        // showModal;
         setloading(true);
         updateCat(filedata1);
       } catch (error) {
-        showModal;
+        // showModal;
         setloading(false);
         console.log('Error :', error);
       }
     }
   };
 
-  const updateCat = async () => {
+  const updateCat = async (url) => {
     if (!comapny || !catid) {
       showToast(
         'error',
@@ -255,7 +258,9 @@ const EvenOddColumns = ({data, navigation}) => {
       updateDoc(doc(db, 'Companysymptoms', catid), {
         company: comapny.trim().toLowerCase(),
         timestamp: serverTimestamp(),
-        url: url,
+        img: url,
+        catl : label2,
+        catv: value2
       })
         .then(() => {
           setloading(false);
@@ -314,7 +319,9 @@ const EvenOddColumns = ({data, navigation}) => {
                       toggleModal(), setmname('UPDATE SYMPTOMS');
                       setcompany(item.even.selecteduser.company.toUpperCase());
                       setcatid(item.even.selecteduser.userid);
-                      setfiledata1(item.even.selecteduser.url);
+                      setfiledata1(item.even.selecteduser.img);
+                      setlabel2(item.even.selecteduser.catl)
+                      setValue2(item.even.selecteduser.catv)
                     }}>
                     <Image
                       source={require('../../Images/edit.png')}
@@ -350,7 +357,7 @@ const EvenOddColumns = ({data, navigation}) => {
               )}
 
               <Image
-                source={require('../../Images/doctorsp.png')}
+                source={{uri : item.even.selecteduser.img }}
                 style={tw`h-20 w-20`}
               />
               <Text
@@ -392,7 +399,9 @@ const EvenOddColumns = ({data, navigation}) => {
                         toggleModal(), setmname('UPDATE SYMPTOMS');
                         setcompany(item.odd.selecteduser.company.toUpperCase());
                         setcatid(item.odd.selecteduser.userid);
-                        setfiledata1(item.odd.selecteduser.url);
+                        setfiledata1(item.odd.selecteduser.img);
+                        setlabel2(item.odd.selecteduser.catl)
+                        setValue2(item.odd.selecteduser.catv)
                       }}>
                       <Image
                         source={require('../../Images/edit.png')}
@@ -428,7 +437,7 @@ const EvenOddColumns = ({data, navigation}) => {
                 )}
 
                 <Image
-                  source={require('../../Images/doctorsp.png')}
+                  source={{uri : item.odd.selecteduser.img }}
                   style={tw`h-20 w-20`}
                 />
                 <Text
@@ -464,7 +473,7 @@ const EvenOddColumns = ({data, navigation}) => {
       ) : (
         <FAB
           onPress={() => {
-            toggleModal(), setfiledata1(null), setmname('ADD SYMPTOMS');
+            toggleModal(), setfiledata1(null),setValue2(null), setmname('ADD SYMPTOMS');
           }}
           style={tw`justify-end w-80 -top-10`}
           visible={visible}
@@ -530,8 +539,8 @@ const EvenOddColumns = ({data, navigation}) => {
 
               <Dropdown
                 style={[
-                  tw`h-12 mt-20 w-60   bg-gray-100 rounded-md`,
-                  {backgroundColor: '#EEEEEE'},
+                  tw`h-12 mt-20 w-60   bg-white border-black border rounded-sm`,
+                  {backgroundColor: '#ffffff'},
                 ]}
                 placeholderStyle={tw`ml-3 text-gray-400 text-xs `}
                 selectedTextStyle={tw`ml-3 text-gray-400  `}
