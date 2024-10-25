@@ -166,7 +166,11 @@ const Sessions = ({ navigation, route }) => {
         { label: 'General Practitioner', value: '15' }
     ];
 
+    
 
+    
+
+    
 
     useEffect(() => {
         AsyncStorage.getItem("email").then((email) => {
@@ -833,8 +837,8 @@ const Sessions = ({ navigation, route }) => {
 
                                                                     <View style={tw`top-5`}>
                                                                         <Input1
-                                                                            edit={false}
-                                                                            placeholder={GetData1[0]?.selecteduser.city}
+                                                                            edit={true}
+                                                                            placeholder={"Enter The Doctor City"}
                                                                             onchangetext={handleChange('doctorcity')}
                                                                             onblur={handleBlur('doctorcity')}
                                                                             value={values.doctorcity}

@@ -18,6 +18,9 @@ import Addupdatesubadmin from '../../Components/Adminscreen/Addupdatesubadmin';
 import Hospitaldetail from '../../Components/Hospitals/Hospitaldetail';
 import Addrecep from './Addrecep';
 import Viewaccounts from '../../Components/Session/Viewaccounts';
+import Companycities from '../../Components/Categories/Companycities';
+import Companydoctors from '../../Components/Categories/Companydoctors';
+import Companysymptoms from '../../Components/Categories/Companysymptoms';
 
 // import Home from '../Bottomtabs/Home';
 // import Tabbar from './Tabbar';
@@ -63,6 +66,10 @@ function Navigation() {
         <Stack.Screen name='Hospitaldetail' component={Hospitaldetail} />
         <Stack.Screen name='Addrecep' component={Addrecep} />
         <Stack.Screen name='Viewaccounts' component={Viewaccounts} />
+        <Stack.Screen name='Companycities' component={Companycities} />
+        <Stack.Screen name='Companydoctors' component={Companydoctors} />
+        <Stack.Screen name='Companysymptoms' component={Companysymptoms} />
+        
         {/* <Stack.Screen name="Viewcatproduct" component={Viewcatproduct} /> */}
         {/* <Stack.Screen options={{
            cardStyle: { backgroundColor: '#fffff' }

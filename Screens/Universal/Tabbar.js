@@ -14,6 +14,7 @@ import Allhospitals from '../Tabbar/Allhospitals';
 import Bookedappointment from '../../Components/Doctors/Bookedappointment';
 import Receptionist from '../Tabbar/Receptionist';
 import Addaccounts from '../Tabbar/Addaccounts';
+import Categories from '../Tabbar/Categories';
 const Tab = createBottomTabNavigator();
 
 function Tabbar() {
@@ -311,6 +312,27 @@ function Tabbar() {
             </>
           )}
         </>
+      )}
+
+      {userflag === 'admin' && (
+        <Tab.Screen
+          options={{
+            tabBarLabel: 'Categories',
+
+            tabBarIcon: ({focused}) => (
+              <Image
+                style={tw`h-8 w-8`}
+                source={
+                  focused
+                    ? require('../../Images/to-do-listb.png')
+                    : require('../../Images/to-do-list.png')
+                }
+              />
+            ),
+          }}
+          name="Categories"
+          component={Categories}
+        />
       )}
 
       <Tab.Screen
