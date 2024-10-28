@@ -15,7 +15,7 @@ import tw from 'twrnc';
 import Modal from 'react-native-modal';
 import FilePicker from 'react-native-document-picker';
 import {FAB} from '@rneui/themed';
-import { Dropdown } from 'react-native-element-dropdown';
+import {Dropdown} from 'react-native-element-dropdown';
 import {
   collection,
   deleteDoc,
@@ -104,10 +104,9 @@ const EvenOddColumns = ({data, navigation}) => {
   const [type1, setimgtype1] = useState(null);
   const [filedata1, setfiledata1] = useState(null);
 
-
   const [value2, setValue2] = useState(null);
   const [label2, setlabel2] = useState(null);
-  const [isFocus2, setIsFocus2] = useState(false)
+  const [isFocus2, setIsFocus2] = useState(false);
   const [GetData1, setGetData1] = useState([]);
 
   useEffect(() => {
@@ -121,8 +120,7 @@ const EvenOddColumns = ({data, navigation}) => {
         })),
       );
     });
- 
-    
+
     return () => {
       unSubscribe();
     };
@@ -177,7 +175,13 @@ const EvenOddColumns = ({data, navigation}) => {
 
   const uploadfile = async () => {
     if (!imglink1 || !comapny || !value2) {
-      showToast('error', 'Error', 'Please Fill All The Feild First', true, 3000);
+      showToast(
+        'error',
+        'Error',
+        'Please Fill All The Feild First',
+        true,
+        3000,
+      );
     } else {
       try {
         setloading(true);
@@ -187,7 +191,6 @@ const EvenOddColumns = ({data, navigation}) => {
         console.log('your file is locating :', url);
         addcat(url);
       } catch (error) {
-       
         setloading(false);
         console.log('Error :', error);
       }
@@ -205,8 +208,8 @@ const EvenOddColumns = ({data, navigation}) => {
         userid,
         timestamp: serverTimestamp(),
         img: url,
-        catl : label2,
-        catv: value2
+        catl: label2,
+        catv: value2,
       })
         .then(() => {
           setloading(false);
@@ -244,7 +247,7 @@ const EvenOddColumns = ({data, navigation}) => {
     }
   };
 
-  const updateCat = async (url) => {
+  const updateCat = async url => {
     if (!comapny || !catid) {
       showToast(
         'error',
@@ -259,8 +262,8 @@ const EvenOddColumns = ({data, navigation}) => {
         company: comapny.trim().toLowerCase(),
         timestamp: serverTimestamp(),
         img: url,
-        catl : label2,
-        catv: value2
+        catl: label2,
+        catv: value2,
       })
         .then(() => {
           setloading(false);
@@ -320,8 +323,8 @@ const EvenOddColumns = ({data, navigation}) => {
                       setcompany(item.even.selecteduser.company.toUpperCase());
                       setcatid(item.even.selecteduser.userid);
                       setfiledata1(item.even.selecteduser.img);
-                      setlabel2(item.even.selecteduser.catl)
-                      setValue2(item.even.selecteduser.catv)
+                      setlabel2(item.even.selecteduser.catl);
+                      setValue2(item.even.selecteduser.catv);
                     }}>
                     <Image
                       source={require('../../Images/edit.png')}
@@ -357,7 +360,7 @@ const EvenOddColumns = ({data, navigation}) => {
               )}
 
               <Image
-                source={{uri : item.even.selecteduser.img }}
+                source={{uri: item.even.selecteduser.img}}
                 style={tw`h-20 w-20`}
               />
               <Text
@@ -400,8 +403,8 @@ const EvenOddColumns = ({data, navigation}) => {
                         setcompany(item.odd.selecteduser.company.toUpperCase());
                         setcatid(item.odd.selecteduser.userid);
                         setfiledata1(item.odd.selecteduser.img);
-                        setlabel2(item.odd.selecteduser.catl)
-                        setValue2(item.odd.selecteduser.catv)
+                        setlabel2(item.odd.selecteduser.catl);
+                        setValue2(item.odd.selecteduser.catv);
                       }}>
                       <Image
                         source={require('../../Images/edit.png')}
@@ -437,7 +440,7 @@ const EvenOddColumns = ({data, navigation}) => {
                 )}
 
                 <Image
-                  source={{uri : item.odd.selecteduser.img }}
+                  source={{uri: item.odd.selecteduser.img}}
                   style={tw`h-20 w-20`}
                 />
                 <Text
@@ -473,7 +476,10 @@ const EvenOddColumns = ({data, navigation}) => {
       ) : (
         <FAB
           onPress={() => {
-            toggleModal(), setfiledata1(null),setValue2(null), setmname('ADD SYMPTOMS');
+            toggleModal(),
+              setfiledata1(null),
+              setValue2(null),
+              setmname('ADD SYMPTOMS');
           }}
           style={tw`justify-end w-80 -top-10`}
           visible={visible}
@@ -539,12 +545,12 @@ const EvenOddColumns = ({data, navigation}) => {
 
               <Dropdown
                 style={[
-                  tw`h-12 mt-20 w-60   bg-white border-black border rounded-sm`,
+                  tw`h-12 mt-20 w-60 bg-white border-black border rounded-sm`,
                   {backgroundColor: '#ffffff'},
                 ]}
-                placeholderStyle={tw`ml-3 text-gray-400 text-xs `}
-                selectedTextStyle={tw`ml-3 text-gray-400  `}
-                containerStyle={tw`h-80 w-80  mt-7 bg-gray-100 rounded-md`}
+                placeholderStyle={tw`ml-3 text-gray-400 text-xs`}
+                selectedTextStyle={tw`ml-3 text-gray-400`}
+                containerStyle={tw`h-80 w-80 mt-7 bg-gray-100 rounded-md`}
                 data={GetData1}
                 maxHeight={300}
                 labelField="label"
@@ -552,10 +558,12 @@ const EvenOddColumns = ({data, navigation}) => {
                 placeholder={'Select Doctor Type'}
                 mode="modal"
                 value={value2}
+                search // This enables the search option
+                searchPlaceholder="Search Doctor Type" // Placeholder for the search input
                 onFocus={() => setIsFocus2(true)}
                 onBlur={() => setIsFocus2(false)}
                 onChange={item => {
-                  console.log('time', item.label);
+                  console.log('Selected:', item.label);
                   setlabel2(item.label);
                   setValue2(item.value);
                   setIsFocus2(false);

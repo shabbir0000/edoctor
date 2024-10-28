@@ -47,6 +47,7 @@ const Yourplan = ({navigation, route}) => {
 
   const [GetData, setGetData] = useState([]);
   const [GetData1, setGetData1] = useState([]);
+  const [GetData2, setGetData2] = useState([]);
 
   useEffect(() => {
     console.log('check catt', catt);
@@ -339,6 +340,24 @@ const Yourplan = ({navigation, route}) => {
     {label: 'General Practitioner'},
   ];
 
+  useEffect(() => {
+    const coll = collection(db, 'Doctorssp');
+
+    const unSubscribe = onSnapshot(coll, snapshot => {
+      setGetData2(
+        snapshot.docs.map(doc => ({
+          label: doc.data().company.toUpperCase(), // Set company name as label
+          value: doc.data().userid, // Set user ID as value
+        })),
+      );
+    });
+
+    return () => {
+      unSubscribe();
+    };
+  }, []);
+
+
   const updatedoc = async (docid, status) => {
     // const slots =  calculateSessionSlots(label,label1,45)
     updateDoc(doc(db, 'Profile', docid), {
@@ -412,7 +431,7 @@ const Yourplan = ({navigation, route}) => {
                   </View>
                 </TouchableOpacity>
 
-                {vrImages?.map((item, index) => (
+                {GetData2?.map((item, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => {
@@ -627,7 +646,7 @@ const Yourplan = ({navigation, route}) => {
                   </View>
                 </TouchableOpacity>
 
-                {vrImages?.map((item, index) => (
+                {GetData2?.map((item, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => {
@@ -744,6 +763,8 @@ const Yourplan = ({navigation, route}) => {
                                 doctoremail: data.selecteduser.email,
                                 doctorpassword: data.selecteduser.password,
                                 doctorcity: data.selecteduser.city,
+                                doctorfee :  data.selecteduser.doctorfee,
+                                doctorexp :  data.selecteduser.doctorexp,
                                 mondayy: data.selecteduser.monday,
                                 tuesdayy: data.selecteduser.tuesday,
                                 wednesdayy: data.selecteduser.wednesday,
@@ -753,12 +774,13 @@ const Yourplan = ({navigation, route}) => {
                                 sundayy: data.selecteduser.sunday,
                                 docid: data.selecteduser.userid,
                                 doctortimefrom:
-                                  data.selecteduser.doctortimefrom,
+                                data.selecteduser.doctortimefrom,
                                 doctortimeto: data.selecteduser.doctortimeto,
                                 profile: data.selecteduser.profilephoto,
                                 labell: data.selecteduser.doctortimefromlabel,
                                 labell1: data.selecteduser.doctortimetolabel,
                                 labell2: data.selecteduser.doctortypelabel,
+                                // labell3: data.selecteduser.cityl,
                                 profilestatus: data.selecteduser.profilestatus,
                               });
                             }}>
@@ -830,6 +852,7 @@ const Yourplan = ({navigation, route}) => {
                             phone: data.selecteduser.phone,
                             slots: data.selecteduser.slots,
                             usercontrol: true,
+                            idd : data.selecteduser.userid
                           });
                         }}>
                         <Text

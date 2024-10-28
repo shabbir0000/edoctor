@@ -417,7 +417,7 @@ const Addrecep = ({ navigation, route }) => {
                 fullname: doctorname,
                 phone: doctorphone,
                 email: doctoremail.toLowerCase().trim(),
-                city: doctorcity.toLowerCase().trim(),
+                city: GetData1[0].selecteduser.city.toLowerCase().trim(),
                 hospitalname: GetData1[0].selecteduser.fullname,
                 hospitalphone: GetData1[0].selecteduser.phone,
                 hospitaladdress: GetData1[0].selecteduser.address,
@@ -449,7 +449,7 @@ const Addrecep = ({ navigation, route }) => {
                         fullname: doctorname,
                         phone: doctorphone,
                         email: doctoremail.toLowerCase().trim(),
-                        city: doctorcity.toLowerCase().trim(),
+                        city: GetData1[0].selecteduser.city.toLowerCase().trim(),
                         hospitalname: GetData1[0].selecteduser.fullname,
                         hospitalphone: GetData1[0].selecteduser.phone,
                         hospitaladdress: GetData1[0].selecteduser.address,
@@ -536,7 +536,7 @@ const Addrecep = ({ navigation, route }) => {
             fullname: doctorname,
             phone: doctorphone,
             email: doctoremail.toLowerCase().trim(),
-            city: doctorcity.toLowerCase().trim(),
+            city: GetData1[0].selecteduser.city.toLowerCase().trim(),
             hospitalname: GetData1[0].selecteduser.fullname,
             hospitalphone: GetData1[0].selecteduser.phone,
             hospitaladdress: GetData1[0].selecteduser.address,
@@ -831,7 +831,7 @@ const Addrecep = ({ navigation, route }) => {
                                                                     }
 
 
-                                                                    <View style={tw`top-5`}>
+                                                                    {/* <View style={tw`top-5`}>
                                                                         <Input1
                                                                             placeholder="Add Receptionist City"
                                                                             onchangetext={handleChange('doctorcity')}
@@ -839,7 +839,7 @@ const Addrecep = ({ navigation, route }) => {
                                                                             value={values.doctorcity}
                                                                             error={touched.doctorcity ? errors.doctorcity : false}
                                                                         />
-                                                                    </View>
+                                                                    </View> */}
 
 
                                                                     {/* <View style={tw`top-8`}>
@@ -872,7 +872,7 @@ const Addrecep = ({ navigation, route }) => {
 
 
 
-                                                                    <View style={tw`top-8`}>
+                                                                    <View style={tw`top-5`}>
                                                                         <Input1
                                                                             placeholder="Add Receptionist Phone"
                                                                             keyboardType={"number-pad"}

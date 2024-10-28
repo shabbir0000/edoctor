@@ -240,6 +240,9 @@ const Categories = ({navigation}) => {
               </View>
             </TouchableOpacity>
           </View>
+
+
+         
         </>
       </View>
     </>

@@ -34,11 +34,11 @@ import {db} from '../../Firebase';
 import uuid from 'react-native-uuid';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Dropdown} from 'react-native-element-dropdown';
-import { AppContext } from '../../AppContext';
+import {AppContext} from '../../AppContext';
 // import LinearGradient f,slotsrom 'react-native-linear-gradient'
 
 const Showappointments = ({navigation, route}) => {
-  const {phone, slots, usercontrol} = route.params;
+  const {phone, slots, usercontrol, idd} = route.params;
   const [email, setemail] = useState('');
   const [slotsselect, setslotsselect] = useState([]);
   const [dayselect, setdayselect] = useState('');
@@ -66,7 +66,7 @@ const Showappointments = ({navigation, route}) => {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const {state, removeFromCart, clearCart, bankacc, banktitle, bankname} =
-  useContext(AppContext);
+    useContext(AppContext);
 
   const fetchSlots = async tempdate => {
     try {
@@ -121,10 +121,12 @@ const Showappointments = ({navigation, route}) => {
     // AsyncStorage.getItem("role").then((role) => {
     if (userflag === true) {
       // setuserflag(true)
+      console.log('flag', userflag);
+
       AsyncStorage.getItem('email').then(email => {
         setemail(email);
         const coll = collection(db, 'Profile');
-        const q = query(coll, where('phone', '==', phone));
+        const q = query(coll, where('userid', '==', idd));
 
         const unSubscribe = onSnapshot(q, snapshot => {
           setGetData(
@@ -195,7 +197,16 @@ const Showappointments = ({navigation, route}) => {
     label1,
     url,
   ) => {
-    if (!doctorname || !doctorphone || !start || !end || !date || !orderid) {
+    if (!doctorname || !doctorphone || !start || !end || !date ) {
+      if (!orderid && userflag === false) {
+        showToast(
+          'error',
+          'Order ID Required',
+          'Must Fill All The Order ID Field',
+          true,
+          1000,
+        );
+      }
       showToast(
         'error',
         'Field Required',
@@ -222,7 +233,7 @@ const Showappointments = ({navigation, route}) => {
         friday: friday,
         saturday: saturday,
         sunday: sunday,
-        orderid : orderid,
+        orderid: orderid,
         doctortimefromlabel: label,
         doctortimetolabel: label1,
         userid,
@@ -246,7 +257,7 @@ const Showappointments = ({navigation, route}) => {
             end: end.trim(),
             userid,
             email: email,
-            orderid : orderid,
+            orderid: orderid,
             todaydate: showdate,
             status: 'confirmed',
             timestamp: serverTimestamp(),
@@ -713,31 +724,35 @@ const Showappointments = ({navigation, route}) => {
                   </View>
 
                   <>
-                    <View style={tw`h-30} w-80 self-center mt-5 `}>
-                      <View style={tw`w-78 h-8 self-center`}>
-                        <Text style={tw`text-xs text-red-500 text-start`}>
-                          Paste Transection ID After Send The 30/=RS App Fee
-                        </Text>
-                      </View>
-                      <TextInput
-                        placeholder={'Enter Your Transection Order ID'}
-                        onChangeText={setorderid}
-                        value={orderid}
-                        style={[
-                          tw`h-12 w-80 rounded-xl text-start pl-5 border-black border `,
-                        ]}></TextInput>
-
-                      <View style={tw`items-end w-80 mt-2`}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('Viewaccounts');
-                          }}>
-                          <Text style={[tw`underline`, {color: '#00B1E7'}]}>
-                            View Accounts
+                    {userflag === true ? (
+                      <></>
+                    ) : (
+                      <View style={tw`h-30} w-80 self-center mt-5 `}>
+                        <View style={tw`w-78 h-8 self-center`}>
+                          <Text style={tw`text-xs text-red-500 text-start`}>
+                            Paste Transection ID After Send The 30/=RS App Fee
                           </Text>
-                        </TouchableOpacity>
+                        </View>
+                        <TextInput
+                          placeholder={'Enter Your Transection Order ID'}
+                          onChangeText={setorderid}
+                          value={orderid}
+                          style={[
+                            tw`h-12 w-80 rounded-xl text-start pl-5 border-black border `,
+                          ]}></TextInput>
+
+                        <View style={tw`items-end w-80 mt-2`}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              navigation.navigate('Viewaccounts');
+                            }}>
+                            <Text style={[tw`underline`, {color: '#00B1E7'}]}>
+                              View Accounts
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                    </View>
+                    )}
 
                     {bankacc ? (
                       <>
@@ -815,46 +830,57 @@ const Showappointments = ({navigation, route}) => {
                     </TouchableOpacity>
                   )}
 
-                  {loading2 ? (
-                    <ActivityIndicator
-                      style={tw`mt-5`}
-                      size={'large'}
-                      color={'blue'}
-                    />
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert(
-                          'Alert',
-                          'Are You Sure You Want To Send Alert',
-                          [
-                            {
-                              text: 'No',
-                              onPress: () => console.log('Cancel Pressed'),
-                              style: 'cancel',
-                            },
-                            {
-                              text: 'Yes',
-                              onPress: () => {
-                                sendemergency(
-                                  data.selecteduser.fullname,
-                                  data.selecteduser.phone,
-                                  data.selecteduser.email,
-                                  data.selecteduser.doctortimefromlabel,
-                                  data.selecteduser.doctortimetolabel,
-                                  data.selecteduser.profilephoto,
-                                );
-                              },
-                            },
-                          ],
-                        );
-                      }}>
-                      <View
-                        style={tw` rounded-3xl bg-red-800  mt-5 w-80 self-center items-center justify-center h-10  `}>
-                        <Text style={tw`text-white`}>SEND EMERGENCY ALERT</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )}
+                  <>
+                    {userflag === true ? (
+                      <></>
+                    ) : (
+                      <>
+                        {loading2 ? (
+                          <ActivityIndicator
+                            style={tw`mt-5`}
+                            size={'large'}
+                            color={'blue'}
+                          />
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => {
+                              Alert.alert(
+                                'Alert',
+                                'Are You Sure You Want To Send Alert',
+                                [
+                                  {
+                                    text: 'No',
+                                    onPress: () =>
+                                      console.log('Cancel Pressed'),
+                                    style: 'cancel',
+                                  },
+                                  {
+                                    text: 'Yes',
+                                    onPress: () => {
+                                      sendemergency(
+                                        data.selecteduser.fullname,
+                                        data.selecteduser.phone,
+                                        data.selecteduser.email,
+                                        data.selecteduser.doctortimefromlabel,
+                                        data.selecteduser.doctortimetolabel,
+                                        data.selecteduser.profilephoto,
+                                      );
+                                    },
+                                  },
+                                ],
+                              );
+                            }}>
+                            <View
+                              style={tw` rounded-3xl bg-red-800  mt-5 w-80 self-center items-center justify-center h-10  `}>
+                              <Text style={tw`text-white`}>
+                                SEND EMERGENCY ALERT
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        )}
+                      </>
+                    )}
+                  </>
                 </>
               ))}
             </ScrollView>

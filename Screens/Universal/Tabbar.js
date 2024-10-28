@@ -216,6 +216,8 @@ function Tabbar() {
                   doctoremail: '',
                   doctorpassword: '',
                   doctorcity: '',
+                  doctorfee : '',
+                  doctorexp : '',
                   mondayy: false,
                   tuesdayy: false,
                   wednesdayy: false,
