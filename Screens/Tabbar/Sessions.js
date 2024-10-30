@@ -397,30 +397,74 @@ const Sessions = ({navigation, route}) => {
     }
   };
 
+  // const calculateSessionSlots = (startTime, endTime, sessionDuration) => {
+  //   const convertTo24HourFormat = time => {
+  //     const [timePart, modifier] = time.split(' ');
+  //     let [hours, minutes] = timePart.split(':');
+
+  //     if (hours === '12') {
+  //       hours = '00';
+  //     }
+
+  //     if (modifier === 'PM' && hours !== '12') {
+  //       hours = parseInt(hours, 10) + 12;
+  //     }
+
+  //     return `${String(hours).padStart(2, '0')}:${minutes}`;
+  //   };
+
+  //   const slots = [];
+  //   let start = new Date(`1970-01-01T${convertTo24HourFormat(startTime)}:00`);
+  //   let end = new Date(`1970-01-01T${convertTo24HourFormat(endTime)}:00`);
+  //   const sessionInMs = sessionDuration * 60 * 1000;
+
+  //   while (start.getTime() + sessionInMs <= end.getTime()) {
+  //     const endSession = new Date(start.getTime() + sessionInMs);
+  //     slots.push({
+  //       start: start.toLocaleTimeString([], {
+  //         hour: '2-digit',
+  //         minute: '2-digit',
+  //         hour12: true,
+  //       }),
+  //       end: endSession.toLocaleTimeString([], {
+  //         hour: '2-digit',
+  //         minute: '2-digit',
+  //         hour12: true,
+  //       }),
+  //     });
+  //     start = endSession;
+  //   }
+
+  //   return slots;
+  // };
+
+
   const calculateSessionSlots = (startTime, endTime, sessionDuration) => {
     const convertTo24HourFormat = time => {
       const [timePart, modifier] = time.split(' ');
       let [hours, minutes] = timePart.split(':');
-
+  
       if (hours === '12') {
         hours = '00';
       }
-
+  
       if (modifier === 'PM' && hours !== '12') {
         hours = parseInt(hours, 10) + 12;
       }
-
+  
       return `${String(hours).padStart(2, '0')}:${minutes}`;
     };
-
+  
     const slots = [];
     let start = new Date(`1970-01-01T${convertTo24HourFormat(startTime)}:00`);
     let end = new Date(`1970-01-01T${convertTo24HourFormat(endTime)}:00`);
     const sessionInMs = sessionDuration * 60 * 1000;
-
+    let token = 1; // Initialize token counter
+  
     while (start.getTime() + sessionInMs <= end.getTime()) {
       const endSession = new Date(start.getTime() + sessionInMs);
       slots.push({
+        token: token, // Add token number
         start: start.toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
@@ -433,11 +477,12 @@ const Sessions = ({navigation, route}) => {
         }),
       });
       start = endSession;
+      token++; // Increment token counter
     }
-
+  
     return slots;
   };
-
+  
   const uploaddocfile = async (
     doctorname,
     doctorphone,
@@ -524,7 +569,7 @@ const Sessions = ({navigation, route}) => {
             email: doctoremail.toLowerCase().trim(),
             //   city: label3.toLowerCase(),
             //   cityl: value3,
-            city: GetData1[0].selecteduser.city,
+            cityl: GetData1[0].selecteduser.cityl,
             doctorfee: doctorfee,
             doctorexp: doctorexp,
             hospitalname: GetData1[0].selecteduser.fullname,
@@ -559,7 +604,7 @@ const Sessions = ({navigation, route}) => {
                 email: doctoremail.toLowerCase().trim(),
                 //   city: label3.toLowerCase(),
                 //   cityl: value3,
-                city: GetData1[0].selecteduser.city,
+                cityl: GetData1[0].selecteduser.cityl,
                 doctorfee: doctorfee,
                 doctorexp: doctorexp,
                 hospitalname: GetData1[0].selecteduser.fullname,
@@ -686,7 +731,7 @@ const Sessions = ({navigation, route}) => {
       email: doctoremail.toLowerCase().trim(),
       //   city: label3.toLowerCase(),
       //   cityl: value3,
-      city: GetData1[0].selecteduser.city,
+      cityl: GetData1[0].selecteduser.cityl,
       doctorfee: doctorfee,
       doctorexp: doctorexp,
       hospitalname: GetData1[0].selecteduser.fullname,
@@ -837,6 +882,13 @@ const Sessions = ({navigation, route}) => {
                               style={tw`font-bold w-30 text-xl`}>
                               {data.selecteduser.doctorname}
                             </Text>
+
+                            <Text
+                              numberOfLines={1}
+                              style={tw`font-light w-30 text-base`}>
+                              Token No: {data.selecteduser.token}
+                            </Text>
+
                             <Text
                               numberOfLines={1}
                               style={tw`font-light mt-2 w-30 text-gray-400 text-base`}>
@@ -850,11 +902,11 @@ const Sessions = ({navigation, route}) => {
                               style={tw`font-medium mt-2  w-30 text-gray-400 text-base`}>
                               From {data.selecteduser.doctortimefromlabel}
                             </Text>
-                            <Text
+                            {/* <Text
                               numberOfLines={1}
                               style={tw`font-medium mt-2  w-30 text-gray-400 text-base`}>
                               To {data.selecteduser.doctortimetolabel}
-                            </Text>
+                            </Text> */}
                           </View>
                         </View>
                         {cat === 'Emergency' ? (

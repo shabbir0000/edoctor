@@ -279,13 +279,13 @@ const Home = ({ navigation, route }) => {
                       style={[tw`shadow-xl w-30 h-30 items-center justify-center self-center`, { backgroundColor: '#00B1E7' }]}>
                       <Text style={tw`text-white text-lg font-bold`}>Current Emergency</Text>
 
-                      <Text style={tw`text-lg text-white`}>{GetData1.length} </Text>
+                      <Text style={tw`text-lg text-white`}>{GetData2.length} </Text>
                     </View>
 
                     <View
                       style={[tw`shadow-xl bg-blue-500 w-30 h-30  items-center justify-center self-center`, { backgroundColor: '#00B1E7' }]}>
                       <Text style={tw`text-white text-lg font-bold`}>Today Appoinment</Text>
-                      <Text style={tw`text-lg text-white`}>{GetData2.length}</Text>
+                      <Text style={tw`text-lg text-white`}>{GetData1.length}</Text>
                     </View>
 
 

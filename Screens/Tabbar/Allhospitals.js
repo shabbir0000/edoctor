@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, FlatList, Image, TouchableOpacity, Alert, Linking } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import tw from "twrnc"
 import { Dropdown } from 'react-native-element-dropdown'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -7,33 +7,37 @@ import { collection, deleteDoc, doc, onSnapshot, query, updateDoc, where } from 
 import { db } from '../../Firebase'
 import Screensheader from '../Universal/Screensheader'
 import Share from 'react-native-share';
+import { AppContext } from '../../AppContext'
+import { useFocusEffect } from '@react-navigation/native'
 
 const Allhospitals = ({ navigation }) => {
 
 
     const [userflag, setuserflag] = useState("")
     const [GetData, setGetData] = useState([]);
+    const {cityy} =
+    useContext(AppContext);
 
-    useEffect(() => {
-        AsyncStorage.getItem('role').then((role) => {
-            setuserflag(role)
-
-            getsubadmin()
-
-        })
-
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+          AsyncStorage.getItem('role').then((role) => {
+            setuserflag(role);
+            getsubadmin();
+          });
+        }, [cityy])
+      );
 
 
 
 
     const getsubadmin = async () => {
-        AsyncStorage.getItem("email").then((email) => {
-            AsyncStorage.getItem("city").then((city) => {
+        // AsyncStorage.getItem("email").then((email) => {
+        //     AsyncStorage.getItem("city").then((city) => {
+                const allhospital = async (city)=>{
                 console.log("user kya ha cat", userflag);
 
                 const coll = collection(db, 'Profile');
-                const q = query(coll, where('role', '==', "subadmin"), where('city', '==', city));
+                const q = query(coll, where('role', '==', "subadmin"), where('cityl', '==', city));
 
                 const unSubscribe = onSnapshot(q, snapshot => {
                     setGetData(
@@ -42,11 +46,14 @@ const Allhospitals = ({ navigation }) => {
                         })),
                     );
                 });
-            })
+            }
+            allhospital(cityy)
+            // })
             return () => {
                 unSubscribe();
             };
-        })
+        
+        // })
     }
 
 
@@ -98,7 +105,7 @@ const Allhospitals = ({ navigation }) => {
                                             <View style={tw`h-20 justify-center w-35 `}>
 
                                                 <Text numberOfLines={1} style={tw`font-bold ml-2 w-75 text-xl`}>{data.selecteduser.fullname.toUpperCase()}</Text>
-                                                <Text numberOfLines={1} style={tw`font-light ml-2  w-40 text-gray-400 text-sm`}>{data.selecteduser.city.toUpperCase()}</Text>
+                                                <Text numberOfLines={1} style={tw`font-light ml-2  w-40 text-gray-400 text-sm`}>{data.selecteduser.cityl.toUpperCase()}</Text>
                                                 <Text numberOfLines={1} style={tw`font-light ml-2  w-40  text-base`}>{data.selecteduser.phone}</Text>
 
 

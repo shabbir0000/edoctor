@@ -7,7 +7,7 @@ import {
   Linking,
   Alert,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import tw from 'twrnc';
 import {showToast} from '../Universal/Input';
 import Toast from 'react-native-toast-message';
@@ -26,6 +26,7 @@ import {
 } from 'firebase/firestore';
 import {db} from '../../Firebase';
 import Share from 'react-native-share';
+import {AppContext} from '../../AppContext';
 // import LinearGradient from 'react-native-linear-gradient'
 
 const Yourplan = ({navigation, route}) => {
@@ -36,6 +37,7 @@ const Yourplan = ({navigation, route}) => {
   const [session, setsession] = useState('');
   const [price, setprice] = useState('');
   const [cat, setcat] = useState(catt);
+  const {cityy} = useContext(AppContext);
 
   const [userflag, setuserflag] = useState('');
 
@@ -49,32 +51,32 @@ const Yourplan = ({navigation, route}) => {
   const [GetData1, setGetData1] = useState([]);
   const [GetData2, setGetData2] = useState([]);
 
-  useEffect(() => {
-    console.log('check catt', catt);
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('check catt', catt);
 
-    catt
-      ? (getdatabycat(catt), setcat(catt))
-      : (setcat(catt),
+      if (catt) {
+        getdatabycat(catt, cityy);
+        setcat(catt);
+      } else {
+        setcat(catt);
         AsyncStorage.getItem('email').then(email => {
           AsyncStorage.getItem('role').then(role => {
             AsyncStorage.getItem('city').then(city => {
               if (role === 'receptionist') {
-                const fetchData = async () => {
+                const fetchData = async city => {
                   const coll = collection(db, 'Profile');
-                  // const q = query(coll, where('role', '==', label1), where('email', '==', email));
                   const q = query(coll, where('email', '==', email));
                   try {
                     const querySnapshot = await getDocs(q);
-
                     if (querySnapshot.size > 0) {
                       console.log('size : ', querySnapshot.size);
                       querySnapshot.forEach(async docs => {
                         const hospitalemail = docs.get('ownemail');
-                        const coll = collection(db, 'Profile');
                         const q = query(
                           coll,
                           where('ownemail', '==', hospitalemail),
-                          where('city', '==', city),
+                          where('cityl', '==', city),
                           where('role', '==', 'doctor'),
                         );
 
@@ -105,55 +107,63 @@ const Yourplan = ({navigation, route}) => {
                     console.error('Error fetching data: ', error);
                   }
                 };
-
-                fetchData();
+                fetchData(cityy);
               } else {
-                const coll = collection(db, 'Profile');
-                const q = query(
-                  coll,
-                  where('ownemail', '==', email),
-                  where('city', '==', city),
-                  where('role', '==', 'doctor'),
-                );
-                const q1 = query(
-                  coll,
-                  where('city', '==', city),
-                  where('role', '==', 'doctor'),
-                );
+                const otherdata = async city => {
+                  console.log("other data city",city);
+                  console.log("other data email",email);
+                  
+                  const coll = collection(db, 'Profile');
+                  const q = query(
+                    coll,
+                    where('ownemail', '==', email),
+                    where('cityl', '==', city),
+                    where('role', '==', 'doctor'),
+                  );
+                  const q1 = query(
+                    coll,
+                    where('cityl', '==', city),
+                    where('role', '==', 'doctor'),
+                  );
 
-                const unSubscribe = onSnapshot(
-                  role === 'user' ? q1 : q,
-                  snapshot => {
-                    setGetData(
-                      snapshot.docs.map(doc => ({
-                        selecteduser: doc.data(),
-                      })),
-                    );
-                  },
-                );
-                return () => {
-                  unSubscribe();
-                  setcat('');
+                  const unSubscribe = onSnapshot(
+                    role === 'user' ? q1 : q,
+                    snapshot => {
+                      setGetData(
+                        snapshot.docs.map(doc => ({
+                          selecteduser: doc.data(),
+                        })),
+                      );
+                    },
+                  );
+                  return () => {
+                    unSubscribe();
+                    setcat('');
+                  };
                 };
+                otherdata(cityy);
               }
             });
           });
-        }));
-  }, [route.params]);
+        });
+      }
+    }, [route.params, cityy]),
+  );
 
   const [allSlots, setAllSlots] = useState([]);
 
-  const getdatabycat = async cat => {
+  const getdatabycat = async (cat, cityy) => {
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('role').then(role => {
         AsyncStorage.getItem('city').then(city => {
           if (role === 'receptionist') {
-            const fetchData = async () => {
+            const fetchData = async city => {
               const coll = collection(db, 'Profile');
               // const q = query(coll, where('role', '==', label1), where('email', '==', email));
               const q = query(coll, where('email', '==', email));
               try {
                 const querySnapshot = await getDocs(q);
+                console.log('category :', cat);
 
                 if (querySnapshot.size > 0) {
                   console.log('size : ', querySnapshot.size);
@@ -163,9 +173,9 @@ const Yourplan = ({navigation, route}) => {
                     const q = query(
                       coll,
                       where('ownemail', '==', hospitalemail),
-                      where('city', '==', city),
+                      where('cityl', '==', city),
                       where('role', '==', 'doctor'),
-                      where('doctortypelabel', '==', cat),
+                      where('doctortypelabel', '==', cat.toLowerCase()),
                     );
 
                     const unSubscribe = onSnapshot(q, snapshot => {
@@ -196,48 +206,53 @@ const Yourplan = ({navigation, route}) => {
               }
             };
 
-            fetchData();
+            fetchData(cityy);
           } else {
-            const coll = collection(db, 'Profile');
-            const q = query(
-              coll,
-              where('city', '==', city),
-              where('role', '==', 'doctor'),
-              where('doctortypelabel', '==', cat),
-            );
-            const q1 = query(
-              coll,
-              where('ownemail', '==', email),
-              where('city', '==', city),
-              where('role', '==', 'doctor'),
-              where('doctortypelabel', '==', cat),
-            );
+            const otherdataa = async city => {
+              console.log("cattt ha ye ",cat);
+              console.log("city ha ye ",city);
+              const coll = collection(db, 'Profile');
+              const q = query(
+                coll,
+                where('cityl', '==', city),
+                where('role', '==', 'doctor'),
+                where('doctortypelabel', '==', cat.toLowerCase()),
+              );
+              const q1 = query(
+                coll,
+                where('ownemail', '==', email),
+                where('cityl', '==', city),
+                where('role', '==', 'doctor'),
+                where('doctortypelabel', '==', cat.toLowerCase()),
+              );
 
-            const unSubscribe = onSnapshot(
-              role === 'user' ? q : q1,
-              snapshot => {
-                setGetData(
-                  snapshot.docs.map(doc => ({
-                    selecteduser: doc.data(),
-                  })),
-                );
-              },
-            );
-            return () => {
-              unSubscribe();
+              const unSubscribe = onSnapshot(
+                role === 'user' ? q : q1,
+                snapshot => {
+                  setGetData(
+                    snapshot.docs.map(doc => ({
+                      selecteduser: doc.data(),
+                    })),
+                  );
+                },
+              );
+              return () => {
+                unSubscribe();
+              };
             };
+            otherdataa(cityy);
           }
         });
       });
     });
   };
 
-  const getalldata = async () => {
+  const getalldata = async cityy => {
     AsyncStorage.getItem('city').then(city => {
       AsyncStorage.getItem('role').then(role => {
         AsyncStorage.getItem('email').then(email => {
           if (role === 'receptionist') {
-            const fetchData = async () => {
+            const fetchData = async city => {
               const coll = collection(db, 'Profile');
               // const q = query(coll, where('role', '==', label1), where('email', '==', email));
               const q = query(coll, where('email', '==', email));
@@ -252,7 +267,7 @@ const Yourplan = ({navigation, route}) => {
                     const q = query(
                       coll,
                       where('ownemail', '==', hospitalemail),
-                      where('city', '==', city),
+                      where('cityl', '==', city),
                       where('role', '==', 'doctor'),
                       // where('doctortypelabel', '==', cat),
                     );
@@ -285,37 +300,40 @@ const Yourplan = ({navigation, route}) => {
               }
             };
 
-            fetchData();
+            fetchData(cityy);
           } else {
-            const coll = collection(db, 'Profile');
-            // const q = query(coll, where('doctortypelabel', '==', cat));
-            const q = query(
-              coll,
-              where('city', '==', city),
-              where('role', '==', 'doctor'),
-            );
+            const otherdataa = async city => {
+              const coll = collection(db, 'Profile');
+              // const q = query(coll, where('doctortypelabel', '==', cat));
+              const q = query(
+                coll,
+                where('cityl', '==', city),
+                where('role', '==', 'doctor'),
+              );
 
-            const q1 = query(
-              coll,
-              where('ownemail', '==', email),
-              where('city', '==', city),
-              where('role', '==', 'doctor'),
-              // where('doctortypelabel', '==', cat),
-            );
+              const q1 = query(
+                coll,
+                where('ownemail', '==', email),
+                where('cityl', '==', city),
+                where('role', '==', 'doctor'),
+                // where('doctortypelabel', '==', cat),
+              );
 
-            const unSubscribe = onSnapshot(
-              role === 'user' ? q : q1,
-              snapshot => {
-                setGetData(
-                  snapshot.docs.map(doc => ({
-                    selecteduser: doc.data(),
-                  })),
-                );
-              },
-            );
-            return () => {
-              unSubscribe();
+              const unSubscribe = onSnapshot(
+                role === 'user' ? q : q1,
+                snapshot => {
+                  setGetData(
+                    snapshot.docs.map(doc => ({
+                      selecteduser: doc.data(),
+                    })),
+                  );
+                },
+              );
+              return () => {
+                unSubscribe();
+              };
             };
+            otherdataa(cityy);
           }
         });
       });
@@ -356,7 +374,6 @@ const Yourplan = ({navigation, route}) => {
       unSubscribe();
     };
   }, []);
-
 
   const updatedoc = async (docid, status) => {
     // const slots =  calculateSessionSlots(label,label1,45)
@@ -411,7 +428,7 @@ const Yourplan = ({navigation, route}) => {
                   onPress={() => {
                     // setloading(true)
                     // getallvideo(token)
-                    getalldata();
+                    getalldata(cityy);
                     setcat('All Doc');
                   }}>
                   <View
@@ -437,13 +454,15 @@ const Yourplan = ({navigation, route}) => {
                     onPress={() => {
                       // setloading(true)
                       // getcatvideo(item.id)
-                      getdatabycat(item.label);
-                      setcat(item.label);
+                      getdatabycat(item.label, cityy);
+                      setcat(item.label.toLowerCase());
                     }}>
                     <View
                       style={[
                         tw`bg-${
-                          cat === item.label ? 'blue-400' : 'white'
+                          cat === item.label.toLowerCase()
+                            ? 'blue-400'
+                            : 'white'
                         } h-10 w-30 ml-5 border flex-row items-center justify-evenly rounded-3xl`,
                         {borderRadius: 50, borderColor: '#00B1E7'},
                       ]}>
@@ -474,6 +493,8 @@ const Yourplan = ({navigation, route}) => {
                       phone: data.selecteduser.phone,
                       slots: data.selecteduser.slots,
                       usercontrol: true,
+                      usercontrol1: false,
+                      idd: data.selecteduser.userid,
                       // filledapp: allSlots
                     });
                   }}>
@@ -626,7 +647,7 @@ const Yourplan = ({navigation, route}) => {
                   onPress={() => {
                     // setloading(true)
                     // getallvideo(token)
-                    getalldata();
+                    getalldata(cityy);
                     setcat('All Doc');
                   }}>
                   <View
@@ -652,7 +673,7 @@ const Yourplan = ({navigation, route}) => {
                     onPress={() => {
                       // setloading(true)
                       // getcatvideo(item.id)
-                      getdatabycat(item.label);
+                      getdatabycat(item.label, cityy);
                       setcat(item.label);
                     }}>
                     <View
@@ -689,6 +710,8 @@ const Yourplan = ({navigation, route}) => {
                       phone: data.selecteduser.phone,
                       slots: data.selecteduser.slots,
                       usercontrol: false,
+                      usercontrol1: false,
+                      idd: data.selecteduser.userid,
                     });
                   }}>
                   <View
@@ -721,23 +744,21 @@ const Yourplan = ({navigation, route}) => {
                       </Text>
 
                       {userflag === 'receptionist' ? (
-                       <View
-                       style={tw` items-center h-10 w-35 justify-between flex-row mt-2`}>
-                       <TouchableOpacity
-                         onPress={() =>
-                           Linking.openURL(
-                             `whatsapp://send?text=Hello\nI Have Query&phone=${data.selecteduser.phone}`,
-                           )
-                         }>
-                         <Image
-                           style={tw`h-6 w-6`}
-                           resizeMode="cover"
-                           source={require('../../Images/whatsapp.png')}
-                         />
-                       </TouchableOpacity>
-
-                
-                     </View>
+                        <View
+                          style={tw` items-center h-10 w-35 justify-between flex-row mt-2`}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              Linking.openURL(
+                                `whatsapp://send?text=Hello\nI Have Query&phone=${data.selecteduser.phone}`,
+                              )
+                            }>
+                            <Image
+                              style={tw`h-6 w-6`}
+                              resizeMode="cover"
+                              source={require('../../Images/whatsapp.png')}
+                            />
+                          </TouchableOpacity>
+                        </View>
                       ) : (
                         <View
                           style={tw` items-center h-10 w-35 justify-between flex-row mt-2`}>
@@ -763,8 +784,8 @@ const Yourplan = ({navigation, route}) => {
                                 doctoremail: data.selecteduser.email,
                                 doctorpassword: data.selecteduser.password,
                                 doctorcity: data.selecteduser.city,
-                                doctorfee :  data.selecteduser.doctorfee,
-                                doctorexp :  data.selecteduser.doctorexp,
+                                doctorfee: data.selecteduser.doctorfee,
+                                doctorexp: data.selecteduser.doctorexp,
                                 mondayy: data.selecteduser.monday,
                                 tuesdayy: data.selecteduser.tuesday,
                                 wednesdayy: data.selecteduser.wednesday,
@@ -774,7 +795,7 @@ const Yourplan = ({navigation, route}) => {
                                 sundayy: data.selecteduser.sunday,
                                 docid: data.selecteduser.userid,
                                 doctortimefrom:
-                                data.selecteduser.doctortimefrom,
+                                  data.selecteduser.doctortimefrom,
                                 doctortimeto: data.selecteduser.doctortimeto,
                                 profile: data.selecteduser.profilephoto,
                                 labell: data.selecteduser.doctortimefromlabel,
@@ -852,7 +873,8 @@ const Yourplan = ({navigation, route}) => {
                             phone: data.selecteduser.phone,
                             slots: data.selecteduser.slots,
                             usercontrol: true,
-                            idd : data.selecteduser.userid
+                            usercontrol1: true,
+                            idd: data.selecteduser.userid,
                           });
                         }}>
                         <Text

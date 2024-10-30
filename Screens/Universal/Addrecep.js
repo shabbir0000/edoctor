@@ -390,7 +390,7 @@ const Addrecep = ({ navigation, route }) => {
 
     const uploaddocfile = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity) => {
         console.log("data :", doctorname, doctorphone, value, value1, value2, imglink1);
-        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword || !doctorcity || !imglink1) {
+        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword  || !imglink1) {
             Alert.alert('Alert', 'Please Fill All The Detail');
 
         }
@@ -405,7 +405,7 @@ const Addrecep = ({ navigation, route }) => {
     };
 
     const adddoc = async (doctorname, doctorphone, doctoremail, doctorpassword, doctorcity, url) => {
-        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword || !doctorcity) {
+        if (!doctorname || !doctorphone || !doctoremail || !doctorpassword ) {
             showToast("error", "Field Required", "Must Fill All The Field", true, 1000)
         }
 
@@ -417,7 +417,7 @@ const Addrecep = ({ navigation, route }) => {
                 fullname: doctorname,
                 phone: doctorphone,
                 email: doctoremail.toLowerCase().trim(),
-                city: GetData1[0].selecteduser.city.toLowerCase().trim(),
+                cityl: GetData1[0].selecteduser.cityl.toLowerCase().trim(),
                 hospitalname: GetData1[0].selecteduser.fullname,
                 hospitalphone: GetData1[0].selecteduser.phone,
                 hospitaladdress: GetData1[0].selecteduser.address,
@@ -449,7 +449,7 @@ const Addrecep = ({ navigation, route }) => {
                         fullname: doctorname,
                         phone: doctorphone,
                         email: doctoremail.toLowerCase().trim(),
-                        city: GetData1[0].selecteduser.city.toLowerCase().trim(),
+                        cityl: GetData1[0].selecteduser.cityl.toLowerCase().trim(),
                         hospitalname: GetData1[0].selecteduser.fullname,
                         hospitalphone: GetData1[0].selecteduser.phone,
                         hospitaladdress: GetData1[0].selecteduser.address,
@@ -536,7 +536,7 @@ const Addrecep = ({ navigation, route }) => {
             fullname: doctorname,
             phone: doctorphone,
             email: doctoremail.toLowerCase().trim(),
-            city: GetData1[0].selecteduser.city.toLowerCase().trim(),
+            cityl: GetData1[0].selecteduser.cityl.toLowerCase().trim(),
             hospitalname: GetData1[0].selecteduser.fullname,
             hospitalphone: GetData1[0].selecteduser.phone,
             hospitaladdress: GetData1[0].selecteduser.address,

@@ -138,114 +138,135 @@ const Categories = ({navigation}) => {
   }, []);
 
   return (
-    <>
-      <View style={tw`flex-1 items-center justify-evenly self-center `}>
-        <>
+    <View style={tw`flex-1   items-center  bg-white `}>
+      <View style={tw`flex-1 bg-white justify-around`}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Companysymptoms', {
+              cat: 'food',
+            });
+          }}>
+          <View
+            style={tw` flex  border border-blue-500 flex-row items-center justify-around self-center h-40 w-80 rounded-xl`}>
+            {/* // balance dev */}
+
+            <View>
+              <Text style={tw`text-xl font-medium text-gray-400 `}>
+                {'Manage Your'}
+              </Text>
+              <Text style={tw`text-xl font-medium text-gray-400  `}>
+                {`Total symptoms \n List`}
+              </Text>
+            </View>
+
+            {/* graph  */}
+            <View
+              style={tw` h-20 w-40 left-5 justify-center self-center items-center rounded-md`}>
+              <Image
+                resizeMode="contain"
+                style={tw`h-19 w-39 rounded-lg `}
+                source={require('../../Images/classification.png')}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <View style={tw`flex-row  w-80 h-50 items-center justify-between`}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Companysymptoms', {
+              navigation.navigate('Companycities', {
                 cat: 'food',
               });
             }}>
             <View
-              style={tw` flex  border border-blue-500 flex-row items-center justify-around self-center h-40 w-80 rounded-xl`}>
-              {/* // balance dev */}
+              style={tw` flex  border border-blue-500 flex-col items-center justify-around self-center h-50 w-38 rounded-xl`}>
+              <View
+                style={tw` h-20 w-40 justify-start self-start items-start left-5 rounded-md`}>
+                <Image
+                  resizeMode="contain"
+                  style={tw`h-19 w-19 rounded-lg `}
+                  source={require('../../Images/cityscape.png')}
+                />
+              </View>
 
-              <View>
+              {/* // balance dev */}
+              <View style={tw` w-30`}>
                 <Text style={tw`text-xl font-medium text-gray-400 `}>
-                  {'Manage Your'}
+                  {'Manage Your Total'}
                 </Text>
-                <Text style={tw`text-xl font-medium text-gray-400  `}>
-                  {`Total symptoms \n List`}
+                <Text style={tw`text-base font-medium text-gray-400  `}>
+                  {'Cities List'}
                 </Text>
-               
               </View>
 
               {/* graph  */}
-              <View
-                style={tw` h-20 w-40 left-5 justify-center self-center items-center rounded-md`}>
-                <Image
-                  resizeMode="contain"
-                  style={tw`h-19 w-39 rounded-lg `}
-                  source={require('../../Images/classification.png')}
-                />
-              </View>
             </View>
           </TouchableOpacity>
 
-          <View style={tw`flex-row  w-80 h-50 items-center justify-between`}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Companycities', {
-                  cat: 'food',
-                });
-              }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Companydoctors', {
+                cat: 'grocery',
+              });
+            }}>
+            <View
+              style={tw` flex  border border-blue-500 flex-col items-center justify-around self-center h-50 w-38 rounded-xl`}>
               <View
-                style={tw` flex  border border-blue-500 flex-col items-center justify-around self-center h-50 w-38 rounded-xl`}>
-                <View
-                  style={tw` h-20 w-40 justify-start self-start items-start left-5 rounded-md`}>
-                  <Image
-                    resizeMode="contain"
-                    style={tw`h-19 w-19 rounded-lg `}
-                    source={require('../../Images/cityscape.png')}
-                  />
-                </View>
-
-                {/* // balance dev */}
-                <View style={tw` w-30`}>
-                  <Text style={tw`text-xl font-medium text-gray-400 `}>
-                    {'Manage Your Total'}
-                  </Text>
-                  <Text style={tw`text-base font-medium text-gray-400  `}>
-                    {'Cities List'}
-                  </Text>
-
-                  
-                </View>
-
-                {/* graph  */}
+                style={tw` h-20 w-40 justify-start self-start items-start left-5 rounded-md`}>
+                <Image
+                  resizeMode="contain"
+                  style={tw`h-19 w-19 rounded-lg `}
+                  source={require('../../Images/doctorsp.png')}
+                />
               </View>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Companydoctors', {
-                  cat: 'grocery',
-                });
-              }}>
-              <View
-                style={tw` flex  border border-blue-500 flex-col items-center justify-around self-center h-50 w-38 rounded-xl`}>
-                <View
-                  style={tw` h-20 w-40 justify-start self-start items-start left-5 rounded-md`}>
-                  <Image
-                    resizeMode="contain"
-                    style={tw`h-19 w-19 rounded-lg `}
-                    source={require('../../Images/doctorsp.png')}
-                  />
-                </View>
-
-                {/* // balance dev */}
-                <View style={tw` w-30`}>
-                  <Text style={tw`text-xl font-medium text-gray-400 `}>
-                    {'Manage Your Total'}
-                  </Text>
-                  <Text style={tw`text-base font-medium text-gray-400  `}>
-                    {'specialist List'}
-                  </Text>
-
-                 
-                </View>
-
-                {/* graph  */}
+              {/* // balance dev */}
+              <View style={tw` w-30`}>
+                <Text style={tw`text-xl font-medium text-gray-400 `}>
+                  {'Manage Your Total'}
+                </Text>
+                <Text style={tw`text-base font-medium text-gray-400  `}>
+                  {'specialist List'}
+                </Text>
               </View>
-            </TouchableOpacity>
+
+              {/* graph  */}
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Companypromotion', {
+              cat: 'food',
+            });
+          }}>
+          <View
+            style={tw` flex  border border-blue-500 flex-row items-center justify-around self-center h-40 w-80 rounded-xl`}>
+            {/* // balance dev */}
+
+            <View>
+              <Text style={tw`text-xl font-medium text-gray-400 `}>
+                {'Manage Your'}
+              </Text>
+              <Text style={tw`text-xl font-medium text-gray-400  `}>
+                {`All Promotion \n List`}
+              </Text>
+            </View>
+
+            {/* graph  */}
+            <View
+              style={tw` h-20 w-40 left-5 justify-center self-center items-center rounded-md`}>
+              <Image
+                resizeMode="contain"
+                style={tw`h-19 w-39 rounded-lg `}
+                source={require('../../Images/promotion.png')}
+              />
+            </View>
           </View>
-
-
-         
-        </>
+        </TouchableOpacity>
       </View>
-    </>
+    </View>
   );
 };
 

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import tw from "twrnc"
 import { Input, showToast } from '../Universal/Input'
 // import CheckBox from '@react-native-community/checkbox';
@@ -13,6 +13,7 @@ import Deviceinfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { useFocusEffect } from '@react-navigation/native'
+import { AppContext } from '../../AppContext';
 
 const Login = ({ navigation }) => {
 
@@ -23,6 +24,8 @@ const Login = ({ navigation }) => {
   const [password, setpassword] = useState("")
   const [loading, setloading] = useState(false)
   const [GetData, setGetData] = useState([]);
+  const {setcity} =
+  useContext(AppContext);
   // const id =  Deviceinfo.getUniqueId();
  
   const loginwithemailandpass = async () => {
@@ -44,8 +47,9 @@ const Login = ({ navigation }) => {
                             querySnapshot.forEach(async (docs) => {
                                 const status = docs.get("profilestatus")
                                 const rolee = docs.get("role")
-                                const city = docs.get("city")
+                                const city = docs.get("cityl")
                                 console.log("status ", status);
+                                console.log("login time city ", city);
                                 if (status === "pending") {
                                     setloading(false)
                                     showToast("error", "Your Account Has Been Disabled", "Please Contact To Admin", false, 3000)
@@ -56,6 +60,7 @@ const Login = ({ navigation }) => {
                                         AsyncStorage.setItem("role", rolee).then(() => {
                                             AsyncStorage.setItem("email", data1.user.email).then(() => {
                                               AsyncStorage.setItem("city", city).then(() => {
+                                                setcity(city)
                                                 navigation.navigate("Tabbar")
                                                 setloading(false)
                                                 console.log("unique id ", id);

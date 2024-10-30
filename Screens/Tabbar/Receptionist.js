@@ -86,7 +86,7 @@ const Receptionist = ({navigation}) => {
         // const q = query(coll, where('doctortypelabel', '==', cat));
         const q = query(
           coll,
-          where('city', '==', city),
+          where('cityl', '==', city),
           where('ownemail', '==', email),
           where('role', '==', 'receptionist'),
         );

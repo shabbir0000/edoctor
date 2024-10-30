@@ -45,6 +45,7 @@ const Addupdatesubadmin = ({navigation, route}) => {
     doctorname,
     doctorphone,
     doctorcity,
+    doctorcityl,
     doctoraddress,
     doctoremail,
     doctorpassword,
@@ -88,8 +89,8 @@ const Addupdatesubadmin = ({navigation, route}) => {
   const [userflag, setuserflag] = useState('');
   const [GetData, setGetData] = useState([]);
   const [GetData3, setGetData3] = useState([]);
-  const [value3, setValue3] = useState(null);
-  const [label3, setlabel3] = useState(null);
+  const [value3, setValue3] = useState(doctorcity);
+  const [label3, setlabel3] = useState(doctorcityl);
   const [isFocus3, setIsFocus3] = useState(false);
 
   const userid = uuid.v4();
@@ -252,7 +253,7 @@ const Addupdatesubadmin = ({navigation, route}) => {
     if (
       !doctorname ||
       !doctorphone ||
-      !doctorcity ||
+      // !doctorcity ||
       !doctoremail ||
       !doctorpassword ||
       !doctoraddress ||
@@ -289,7 +290,7 @@ const Addupdatesubadmin = ({navigation, route}) => {
     if (
       !doctorname ||
       !doctorphone ||
-      !doctorcity ||
+      // !doctorcity ||
       !doctoremail ||
       !doctorpassword ||
       !doctoraddress
@@ -608,7 +609,7 @@ const Addupdatesubadmin = ({navigation, route}) => {
                                   console.log('time', item.label);
                                   setlabel3(item.label);
                                   setValue3(item.value);
-                                  setcity(item.label);
+                                  // setcity(item.label);
                                   setIsFocus3(false);
                                 }}
                               />

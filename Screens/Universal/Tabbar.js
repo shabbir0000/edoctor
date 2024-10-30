@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {Image, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import tw from 'twrnc';
@@ -15,15 +15,21 @@ import Bookedappointment from '../../Components/Doctors/Bookedappointment';
 import Receptionist from '../Tabbar/Receptionist';
 import Addaccounts from '../Tabbar/Addaccounts';
 import Categories from '../Tabbar/Categories';
+import { AppContext } from '../../AppContext';
 const Tab = createBottomTabNavigator();
 
 function Tabbar() {
   const [userflag, setuserflag] = useState('');
+  const {setcity} =
+  useContext(AppContext);
 
   useFocusEffect(
     useCallback(() => {
-      AsyncStorage.getItem('role').then(role => {
-        setuserflag(role);
+      AsyncStorage.getItem('city').then(city => {
+        AsyncStorage.getItem('role').then(role => {
+          setcity(city)
+          setuserflag(role);
+        });
       });
 
       return () => {};
@@ -216,8 +222,8 @@ function Tabbar() {
                   doctoremail: '',
                   doctorpassword: '',
                   doctorcity: '',
-                  doctorfee : '',
-                  doctorexp : '',
+                  doctorfee: '',
+                  doctorexp: '',
                   mondayy: false,
                   tuesdayy: false,
                   wednesdayy: false,

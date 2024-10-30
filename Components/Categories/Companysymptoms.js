@@ -520,7 +520,7 @@ const EvenOddColumns = ({data, navigation}) => {
                         uri: filedata1,
                       }}
                       resizeMode="contain"
-                      style={tw`h-30 w-30 rounded-full`}
+                      style={tw`h-29 w-29 rounded-full`}
                     />
                   )}
                 </View>

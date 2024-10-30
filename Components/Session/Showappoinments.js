@@ -38,7 +38,7 @@ import {AppContext} from '../../AppContext';
 // import LinearGradient f,slotsrom 'react-native-linear-gradient'
 
 const Showappointments = ({navigation, route}) => {
-  const {phone, slots, usercontrol, idd} = route.params;
+  const {phone, slots, usercontrol, usercontrol1, idd} = route.params;
   const [email, setemail] = useState('');
   const [slotsselect, setslotsselect] = useState([]);
   const [dayselect, setdayselect] = useState('');
@@ -65,6 +65,7 @@ const Showappointments = ({navigation, route}) => {
   const [isFocus2, setIsFocus2] = useState(false);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [error, setError] = useState('');
   const {state, removeFromCart, clearCart, bankacc, banktitle, bankname} =
     useContext(AppContext);
 
@@ -89,7 +90,7 @@ const Showappointments = ({navigation, route}) => {
 
       const transformedData = uniqueSlots.map((slot, index) => ({
         label: `${slot.start} ,${slot.end}`,
-        value: index.toString(),
+        value: slot.token,
       }));
       console.log('Unique Slots:', transformedData);
 
@@ -197,8 +198,8 @@ const Showappointments = ({navigation, route}) => {
     label1,
     url,
   ) => {
-    if (!doctorname || !doctorphone || !start || !end || !date ) {
-      if (!orderid && userflag === false) {
+    if (!doctorname || !doctorphone || !start || !end || !date) {
+      if (!orderid.length < 10 && usercontrol1 === false) {
         showToast(
           'error',
           'Order ID Required',
@@ -242,6 +243,7 @@ const Showappointments = ({navigation, route}) => {
         status: 'confirmed',
         timestamp: serverTimestamp(),
         profile: url,
+        token: value2,
       })
         .then(() => {
           console.log('done');
@@ -261,6 +263,7 @@ const Showappointments = ({navigation, route}) => {
             todaydate: showdate,
             status: 'confirmed',
             timestamp: serverTimestamp(),
+            token: value2,
           });
           setloading(false);
           Alert.alert('Congratulation', 'Appointment Has Been Booked', [
@@ -444,6 +447,16 @@ const Showappointments = ({navigation, route}) => {
         setloading1(false);
         Alert.alert('this :', error.message);
       });
+  };
+
+  const handleChange = value => {
+    setorderid(value);
+
+    if (value.length < 10) {
+      setError('Minimum 10 characters required');
+    } else {
+      setError('');
+    }
   };
 
   return (
@@ -706,7 +719,7 @@ const Showappointments = ({navigation, route}) => {
                         value={value2}
                         onFocus={() => setIsFocus2(true)}
                         onBlur={() => setIsFocus2(false)}
-                        onChange={item => {
+                        onChange={(item, index) => {
                           const timeString = item.label;
                           const timeArray = timeString.split(',');
 
@@ -715,6 +728,7 @@ const Showappointments = ({navigation, route}) => {
                             setEnd(timeArray[1]);
                           }
                           console.log('time', item.label);
+                          console.log('index', item.value);
                           setlabel2(item.label);
                           setValue2(item.value);
                           setIsFocus2(false);
@@ -724,76 +738,83 @@ const Showappointments = ({navigation, route}) => {
                   </View>
 
                   <>
-                    {userflag === true ? (
+                    {usercontrol1 === true ? (
                       <></>
                     ) : (
-                      <View style={tw`h-30} w-80 self-center mt-5 `}>
-                        <View style={tw`w-78 h-8 self-center`}>
-                          <Text style={tw`text-xs text-red-500 text-start`}>
-                            Paste Transection ID After Send The 30/=RS App Fee
-                          </Text>
-                        </View>
-                        <TextInput
-                          placeholder={'Enter Your Transection Order ID'}
-                          onChangeText={setorderid}
-                          value={orderid}
-                          style={[
-                            tw`h-12 w-80 rounded-xl text-start pl-5 border-black border `,
-                          ]}></TextInput>
-
-                        <View style={tw`items-end w-80 mt-2`}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              navigation.navigate('Viewaccounts');
-                            }}>
-                            <Text style={[tw`underline`, {color: '#00B1E7'}]}>
-                              View Accounts
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    )}
-
-                    {bankacc ? (
                       <>
-                        <View
-                          style={[
-                            tw` h-40 mb-5 rounded-2xl border-gray-300 border w-80 flex-row justify-between self-center`,
-                            {backgroundColor: '#ffffff'},
-                          ]}>
-                          <View
-                            style={tw` justify-center h-40 w-65 rounded-lg`}>
-                            <Text style={tw`ml-3 text-lg font-semibold`}>
-                              Account Title:
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={tw`ml-3 text-base font-light`}>
-                              {banktitle}
-                            </Text>
-
-                            <Text style={tw`ml-3 text-lg font-semibold`}>
-                              Bank Name:
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={tw`ml-3 text-base font-light`}>
-                              {bankname}
-                            </Text>
-
-                            <Text style={tw`ml-3 text-lg font-semibold`}>
-                              Account No:
-                            </Text>
-                            <Text
-                              numberOfLines={1}
-                              style={tw`ml-3 text-base font-light`}>
-                              {bankacc}
+                        <View style={tw`h-30} w-80 self-center mt-5 `}>
+                          <View style={tw`w-78 h-8 self-center`}>
+                            <Text style={tw`text-xs text-red-500 text-start`}>
+                              Paste Transection ID After Send The 30/=RS App Fee
                             </Text>
                           </View>
+                          <TextInput
+                            placeholder={'Enter Your Transection Order ID'}
+                            onChangeText={handleChange}
+                            value={orderid}
+                            keyboardType="number-pad"
+                            style={[
+                              tw`h-12 w-80 rounded-xl text-start pl-5 border-black border `,
+                            ]}></TextInput>
+
+                          {error ? (
+                            <Text style={tw`mt-2  text-red-500`}>{error}</Text>
+                          ) : null}
+
+                          <View style={tw`items-end w-80  `}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                navigation.navigate('Viewaccounts');
+                              }}>
+                              <Text style={[tw`underline`, {color: '#00B1E7'}]}>
+                                View Accounts
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
                         </View>
+
+                        {bankacc ? (
+                          <>
+                            <View
+                              style={[
+                                tw` h-40 mb-5 rounded-2xl border-gray-300 border w-80 flex-row justify-between self-center`,
+                                {backgroundColor: '#ffffff'},
+                              ]}>
+                              <View
+                                style={tw` justify-center h-40 w-65 rounded-lg`}>
+                                <Text style={tw`ml-3 text-lg font-semibold`}>
+                                  Account Title:
+                                </Text>
+                                <Text
+                                  numberOfLines={1}
+                                  style={tw`ml-3 text-base font-light`}>
+                                  {banktitle}
+                                </Text>
+
+                                <Text style={tw`ml-3 text-lg font-semibold`}>
+                                  Bank Name:
+                                </Text>
+                                <Text
+                                  numberOfLines={1}
+                                  style={tw`ml-3 text-base font-light`}>
+                                  {bankname}
+                                </Text>
+
+                                <Text style={tw`ml-3 text-lg font-semibold`}>
+                                  Account No:
+                                </Text>
+                                <Text
+                                  numberOfLines={1}
+                                  style={tw`ml-3 text-base font-light`}>
+                                  {bankacc}
+                                </Text>
+                              </View>
+                            </View>
+                          </>
+                        ) : (
+                          <></>
+                        )}
                       </>
-                    ) : (
-                      <></>
                     )}
                   </>
 
@@ -824,14 +845,14 @@ const Showappointments = ({navigation, route}) => {
                         );
                       }}>
                       <View
-                        style={tw` rounded-3xl bg-blue-800 w-80 self-center items-center justify-center h-10  `}>
+                        style={tw` rounded-3xl bg-blue-800 mt-5 w-80 self-center items-center justify-center h-10  `}>
                         <Text style={tw`text-white`}>BOOK APPOINMENT</Text>
                       </View>
                     </TouchableOpacity>
                   )}
 
                   <>
-                    {userflag === true ? (
+                    {usercontrol1 === true ? (
                       <></>
                     ) : (
                       <>
@@ -962,10 +983,11 @@ const Showappointments = ({navigation, route}) => {
                             style={tw`font-bold w-40 text-xl`}>
                             {data.selecteduser.doctorname}
                           </Text>
+
                           <Text
                             numberOfLines={1}
-                            style={tw`font-light  w-40 text-gray-400 text-sm`}>
-                            {data.selecteduser.doctortypelabel}
+                            style={tw`font-light w-30 text-base`}>
+                            Token No: {data.selecteduser.token}
                           </Text>
                         </View>
 

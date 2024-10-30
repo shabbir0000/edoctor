@@ -71,7 +71,7 @@ const Hospitaldetail = ({ navigation, route }) => {
                                         style={tw`h-5 w-5`}
                                     />
 
-                                    <Text numberOfLines={1} style={tw`w-70 font-normal`}>{data.selecteduser.city.toUpperCase()}</Text>
+                                    <Text numberOfLines={1} style={tw`w-70 font-normal`}>{data.selecteduser.cityl.toUpperCase()}</Text>
 
                                 </View>
 

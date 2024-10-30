@@ -59,7 +59,7 @@ const Signup = ({navigation}) => {
             fullname: name,
             phone: phone,
             role: 'user',
-            city: city.toLowerCase().trim(),
+            cityl: city.toLowerCase().trim(),
             email: email.toLowerCase().trim(),
             password,
             userid,

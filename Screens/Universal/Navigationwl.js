@@ -21,6 +21,7 @@ import Viewaccounts from '../../Components/Session/Viewaccounts';
 import Companycities from '../../Components/Categories/Companycities';
 import Companydoctors from '../../Components/Categories/Companydoctors';
 import Companysymptoms from '../../Components/Categories/Companysymptoms';
+import Companypromotion from '../../Components/Categories/Companypromotion';
 
 // import Home from '../Bottomtabs/Home';
 // import Tabbar from './Tabbar';
@@ -69,7 +70,7 @@ function Navigation() {
         <Stack.Screen name='Companycities' component={Companycities} />
         <Stack.Screen name='Companydoctors' component={Companydoctors} />
         <Stack.Screen name='Companysymptoms' component={Companysymptoms} />
-        
+        <Stack.Screen name='Companypromotion' component={Companypromotion} />
         {/* <Stack.Screen name="Viewcatproduct" component={Viewcatproduct} /> */}
         {/* <Stack.Screen options={{
            cardStyle: { backgroundColor: '#fffff' }

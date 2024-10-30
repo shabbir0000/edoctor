@@ -8,7 +8,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import tw from 'twrnc';
 import {Dropdown} from 'react-native-element-dropdown';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,6 +24,7 @@ import {
 import {db} from '../../Firebase';
 import Screensheader from '../Universal/Screensheader';
 import Share from 'react-native-share';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Category = ({navigation}) => {
   const [userflag, setuserflag] = useState('');
@@ -37,17 +38,21 @@ const Category = ({navigation}) => {
   const [cat, setcat] = useState('Today Active');
   const [catid, setcatid] = useState('Today Active');
 
-  useEffect(() => {
-    AsyncStorage.getItem('role').then(role => {
-      setuserflag(role);
-      if (role === 'admin') {
-        getsubadmin();
-      } else {
-        setGetData1([]);
-        getemergency();
-      }
-    });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      AsyncStorage.getItem('role').then(role => {
+        console.log("role btao ",role);
+        
+        setuserflag(role);
+        if (role === 'admin' || role === 'user') {
+          getsubadmin();
+        } else {
+          setGetData1([]);
+          getemergency();
+        }
+      });
+    }, [])
+  );
 
   const shareUserCredentials = (name, email, password, role) => {
     const message = `Hello ${name},\nyour email is\n${email}\nand your password is\n${password}.\nand your Role is\n${role}`;
@@ -65,14 +70,15 @@ const Category = ({navigation}) => {
   };
 
   const getsubadmin = async () => {
-    AsyncStorage.getItem('email').then(email => {
+    AsyncStorage.getItem('city').then(city => {
       AsyncStorage.getItem('role').then(role => {
-        console.log('user kya ha cat', userflag);
+        console.log('user kya ha cat', role);
 
         const coll = collection(db, 'Profile');
         const q = query(coll, where('role', '==', 'subadmin'));
+        const q1 = query(coll, where('role', '==', 'subadmin'),where('cityl', '==',city));
 
-        const unSubscribe = onSnapshot(q, snapshot => {
+        const unSubscribe = onSnapshot(role === "admin" ? q : q1 , snapshot => {
           setGetData(
             snapshot.docs.map(doc => ({
               selecteduser: doc.data(),
@@ -265,6 +271,7 @@ const Category = ({navigation}) => {
                       doctorname: '',
                       doctorphone: '',
                       doctorcity: '',
+                      doctorcityl:'',
                       doctoraddress: '',
                       doctoremail: '',
                       doctorpassword: '',
@@ -319,7 +326,7 @@ const Category = ({navigation}) => {
                         <Text
                           numberOfLines={1}
                           style={tw`font-light ml-2 mt-1 w-40 text-gray-400 text-sm`}>
-                          {data.selecteduser.city.toUpperCase()}
+                          {data.selecteduser.cityl.toUpperCase()}
                         </Text>
                         <Text
                           numberOfLines={1}
@@ -347,6 +354,7 @@ const Category = ({navigation}) => {
                               navigation.navigate('Addupdatesubadmin', {
                                 doctorname: data.selecteduser.fullname,
                                 doctorcity: data.selecteduser.city,
+                                doctorcityl :  data.selecteduser.cityl,
                                 doctoraddress: data.selecteduser.address,
                                 doctorphone: data.selecteduser.phone,
                                 doctoremail: data.selecteduser.email,

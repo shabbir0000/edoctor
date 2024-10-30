@@ -1,5 +1,6 @@
 // AppContext.js
-import React, { createContext, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useEffect, useState } from 'react';
 
 const AppContext = createContext();
 
@@ -14,7 +15,18 @@ const AppProvider = ({ children }) => {
     const [banktitle,setbanktitle] = useState("")
     const [bankacc,setbankacc] = useState("")
     const [vendoremail,setvendoremail] = useState("")
-
+    const [cityy,setcity] = useState("")
+    
+    // useEffect(()=>{
+    //    AsyncStorage.getItem("city").then((city)=>{
+    //       // if (!cityy) {
+    //         console.log("context api :",city);
+            
+    //         setcity(city)
+    //       // }
+         
+    //    })
+    // },[])
 
     const handleCategoryChange = (newCategory) => {
       setcat(newCategory);
@@ -115,7 +127,7 @@ const AppProvider = ({ children }) => {
 //   };
 
   return (
-    <AppContext.Provider value={{ state,cat ,vendoremail,setvendoremail, setcat,setbankname,bankname,setbanktitle,banktitle,setbankacc,bankacc,  addToCart, updateCart, removeFromCart,decreaseQuantity,clearCart }}>
+    <AppContext.Provider value={{ state,cat ,setcity,cityy, vendoremail,setvendoremail, setcat,setbankname,bankname,setbanktitle,banktitle,setbankacc,bankacc,  addToCart, updateCart, removeFromCart,decreaseQuantity,clearCart }}>
       {children}
     </AppContext.Provider>
   );
