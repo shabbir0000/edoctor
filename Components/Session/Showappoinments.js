@@ -39,6 +39,8 @@ import {AppContext} from '../../AppContext';
 
 const Showappointments = ({navigation, route}) => {
   const {phone, slots, usercontrol, usercontrol1, idd} = route.params;
+  console.log('control', usercontrol1);
+
   const [email, setemail] = useState('');
   const [slotsselect, setslotsselect] = useState([]);
   const [dayselect, setdayselect] = useState('');
@@ -199,15 +201,8 @@ const Showappointments = ({navigation, route}) => {
     url,
   ) => {
     if (!doctorname || !doctorphone || !start || !end || !date) {
-      if (!orderid.length < 10 && usercontrol1 === false) {
-        showToast(
-          'error',
-          'Order ID Required',
-          'Must Fill All The Order ID Field',
-          true,
-          1000,
-        );
-      }
+      console.log('length', orderid.length);
+
       showToast(
         'error',
         'Field Required',
@@ -216,68 +211,78 @@ const Showappointments = ({navigation, route}) => {
         1000,
       );
     } else {
-      setloading(true);
-      setDoc(doc(db, 'Appointment', userid), {
-        doctorname: doctorname,
-        doctorphone: doctorphone,
-        doctoremail: doctoremail,
-        doctortypelabel: label2,
-        username: GetData1[0].selecteduser.fullname,
-        phone: GetData1[0].selecteduser.phone,
-        bookdate: date,
-        bookstime: start.trim(),
-        booketime: end.trim(),
-        monday: monday,
-        tuesday: tuesday,
-        wednesday: wednesday,
-        thursday: thursday,
-        friday: friday,
-        saturday: saturday,
-        sunday: sunday,
-        orderid: orderid,
-        doctortimefromlabel: label,
-        doctortimetolabel: label1,
-        userid,
-        email: email,
-        todaydate: showdate,
-        status: 'confirmed',
-        timestamp: serverTimestamp(),
-        profile: url,
-        token: value2,
-      })
-        .then(() => {
-          console.log('done');
-          setDoc(doc(db, 'Filledapp', userid), {
-            doctorname: doctorname,
-            doctorphone: doctorphone,
-            doctoremail: doctoremail,
-            doctortypelabel: label2,
-            username: GetData1[0].selecteduser.fullname,
-            phone: GetData1[0].selecteduser.phone,
-            bookdate: date,
-            start: start.trim(),
-            end: end.trim(),
-            userid,
-            email: email,
-            orderid: orderid,
-            todaydate: showdate,
-            status: 'confirmed',
-            timestamp: serverTimestamp(),
-            token: value2,
-          });
-          setloading(false);
-          Alert.alert('Congratulation', 'Appointment Has Been Booked', [
-            {
-              text: 'OK',
-              onPress: () => navigation.navigate('Home'),
-            },
-          ]);
+      if (orderid.length < 10 && usercontrol1 === false) {
+        showToast(
+          'error',
+          'Transection ID Required',
+          'Must Fill 10 Number Transection ID',
+          true,
+          3000,
+        );
+      } else {
+        setloading(true);
+        setDoc(doc(db, 'Appointment', userid), {
+          doctorname: doctorname,
+          doctorphone: doctorphone,
+          doctoremail: doctoremail,
+          doctortypelabel: label2,
+          username: GetData1[0].selecteduser.fullname,
+          phone: GetData1[0].selecteduser.phone,
+          bookdate: date,
+          bookstime: start.trim(),
+          booketime: end.trim(),
+          monday: monday,
+          tuesday: tuesday,
+          wednesday: wednesday,
+          thursday: thursday,
+          friday: friday,
+          saturday: saturday,
+          sunday: sunday,
+          orderid: orderid,
+          doctortimefromlabel: label,
+          doctortimetolabel: label1,
+          userid,
+          email: email,
+          todaydate: showdate,
+          status: 'confirmed',
+          timestamp: serverTimestamp(),
+          profile: url,
+          token: value2,
         })
-        .catch(error => {
-          setloading(false);
-          // console.log(error);
-          Alert.alert('this :', error.message);
-        });
+          .then(() => {
+            console.log('done');
+            setDoc(doc(db, 'Filledapp', userid), {
+              doctorname: doctorname,
+              doctorphone: doctorphone,
+              doctoremail: doctoremail,
+              doctortypelabel: label2,
+              username: GetData1[0].selecteduser.fullname,
+              phone: GetData1[0].selecteduser.phone,
+              bookdate: date,
+              start: start.trim(),
+              end: end.trim(),
+              userid,
+              email: email,
+              orderid: orderid,
+              todaydate: showdate,
+              status: 'confirmed',
+              timestamp: serverTimestamp(),
+              token: value2,
+            });
+            setloading(false);
+            Alert.alert('Congratulation', 'Appointment Has Been Booked', [
+              {
+                text: 'OK',
+                onPress: () => navigation.navigate('Home'),
+              },
+            ]);
+          })
+          .catch(error => {
+            setloading(false);
+            // console.log(error);
+            Alert.alert('this :', error.message);
+          });
+      }
     }
   };
 
@@ -510,19 +515,45 @@ const Showappointments = ({navigation, route}) => {
                     </View>
                   </View>
 
-                  <View
-                    style={tw` self-center items-center justify-center w-80 h-30 `}>
-                    <Text style={tw`font-light text-sm`}>
-                      {`At ${data.selecteduser.hospitalname}, we provide top-notch healthcare with leading doctors like `}
-                      <Text style={tw`font-semibold`}>
-                        {data.selecteduser.doctorname}
-                      </Text>
-                      {`, the top `}
-                      <Text style={tw`font-semibold`}>
-                        {data.selecteduser.doctortypelabel}
-                      </Text>
-                      {`. We ensures exceptional care with skilled professionals dedicated to your well-being. From expert diagnosis to advanced treatments.`}
+                  <View style={tw`w-80 h-40`}>
+                    <Text style={[tw`font-bold text-xl `, {color: '#00B1E7'}]}>
+                      DOCTOR INFO
                     </Text>
+                    <View
+                      style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                      <Image
+                        source={require('../../Images/fee.png')}
+                        style={tw`h-5 w-5`}
+                      />
+
+                      <Text numberOfLines={1} style={tw`w-70 font-light`}>
+                        {data.selecteduser?.doctorfee} RS
+                      </Text>
+                    </View>
+
+                    <View
+                      style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                      <Image
+                        source={require('../../Images/experience.png')}
+                        style={tw`h-5 w-5`}
+                      />
+
+                      <Text numberOfLines={2} style={tw`w-70 font-light`}>
+                        {data.selecteduser?.doctorexp}
+                      </Text>
+                    </View>
+
+                    <View
+                      style={tw`flex-row w-80 h-10 items-center justify-between `}>
+                      <Image
+                        source={require('../../Images/education.png')}
+                        style={tw`h-5 w-5`}
+                      />
+
+                      <Text numberOfLines={2} style={tw`w-70 font-light`}>
+                        {data.selecteduser?.doctoredu}
+                      </Text>
+                    </View>
                   </View>
 
                   <View style={tw`w-80 h-40`}>
@@ -683,21 +714,58 @@ const Showappointments = ({navigation, route}) => {
                         isVisible={model}
                         mode="date"
                         onConfirm={day => {
-                          const dd =
-                            day.getFullYear() +
-                            '/' +
-                            (day.getMonth() + 1) +
-                            '/' +
-                            day.getDate();
-                          fetchSlots(dd);
-                          setdate(
-                            day.getFullYear() +
-                              '/' +
-                              (day.getMonth() + 1) +
-                              '/' +
-                              day.getDate(),
+                          const today = new Date();
+                          // Remove the time part from today's date for comparison
+                          today.setHours(0, 0, 0, 0);
+                          console.log('get day', day.getDay());
+                         
+                          // Remove the time part from the selected date for comparison
+                          day.setHours(0, 0, 0, 0);
+
+                          // Use filter to remove elements equal to "0"
+                          const filteredArray = data.selecteduser.days.filter(
+                            element => element !== '0',
                           );
-                          setmodel(!model);
+
+                          console.log(filteredArray); // This will output: [2, 4]
+                          const dayOfWeek =  day.getDay();
+                          const dayofwekks = dayOfWeek.toString()
+                          // Check if t he selected day is allowed (Monday, Wednesday, Thursday, or Saturday)
+                          // const allowedDays = [1, 3, 4, 6]; // 1 = Monday, 3 = Wednesday, 4 = Thursday, 6 = Saturday
+
+                          if (day < today) {
+                            console.log('past date');
+                            setmodel(!model);
+                            Alert.alert(
+                              'Invalid Date',
+                              'Past dates are not allowed.',
+                            );
+                          } else {
+                            if (!filteredArray.includes(dayofwekks)) {
+                              setmodel(!model);
+                              Alert.alert(
+                                'Invalid Day',
+                                'The doctor is not available on this day.',
+                              );
+                            } else {
+                              const dd =
+                                day.getFullYear() +
+                                '/' +
+                                (day.getMonth() + 1) +
+                                '/' +
+                                day.getDate();
+
+                              fetchSlots(dd);
+                              setdate(
+                                day.getFullYear() +
+                                  '/' +
+                                  (day.getMonth() + 1) +
+                                  '/' +
+                                  day.getDate(),
+                              );
+                              setmodel(!model);
+                            }
+                          }
                         }}
                         onCancel={() => setmodel(!model)}
                       />

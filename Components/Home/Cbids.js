@@ -6,6 +6,7 @@ import {
   Dimensions,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import LottieView from 'lottie-react-native';
@@ -14,9 +15,16 @@ import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {showToast} from '../../Screens/Universal/Input';
 import {useFocusEffect} from '@react-navigation/native';
-import {collection, limit, onSnapshot, query, where} from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  limit,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
 import {db} from '../../Firebase';
-import { AppContext } from '../../AppContext';
+import {AppContext} from '../../AppContext';
 
 const Cbids = ({navigation}) => {
   const [userflag, setuserflag] = useState(false);
@@ -28,8 +36,7 @@ const Cbids = ({navigation}) => {
   const [GetData1, setGetData1] = useState([]);
   const [GetData2, setGetData2] = useState([]);
   const [GetData3, setGetData3] = useState([]);
-  const {cityy} =
-  useContext(AppContext);
+  const {cityy} = useContext(AppContext);
 
   const datee = new Date();
   const showdate =
@@ -70,53 +77,107 @@ const Cbids = ({navigation}) => {
   useEffect(() => {
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('role').then(role => {
-      const coll = collection(db, 'Appointment');
-      const q = query(coll, where('bookdate', '==', showdate));
-      // const q1 = query(coll, where('bookdate', '==', showdate));
+        const coll = collection(db, 'Appointment');
+        const q = query(coll, where('bookdate', '==', showdate));
+        // const q1 = query(coll, where('bookdate', '==', showdate));
 
-      const unSubscribe = onSnapshot(q, snapshot => {
-        setGetData1(
-          snapshot.docs.map(doc => ({
-            selecteduser: doc.data(),
-          })),
-        );
+        const unSubscribe = onSnapshot(q, snapshot => {
+          setGetData1(
+            snapshot.docs.map(doc => ({
+              selecteduser: doc.data(),
+            })),
+          );
+        });
+        return () => {
+          unSubscribe();
+        };
       });
-      return () => {
-        unSubscribe();
-      };
     });
-  })
   }, []);
 
   useEffect(() => {
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('city').then(city => {
-      const coll = collection(db, 'Profile');
-      const q = query(
-        coll,
-        where('cityl', '==', city),
-        where('role', '==', 'doctor'),
-        where('ownemail', '==', email),
-      );
-      
-      const unSubscribe = onSnapshot( q, snapshot => {
-        setGetData2(
-          snapshot.docs.map(doc => ({
-            selecteduser: doc.data(),
-          })),
-        );
+        AsyncStorage.getItem('role').then(role => {
+          if (role === 'receptionist') {
+            const fetchData = async city => {
+              const coll = collection(db, 'Profile');
+              // const q = query(coll, where('role', '==', label1), where('email', '==', email));
+              const q = query(coll, where('email', '==', email));
+              try {
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.size > 0) {
+                  console.log('size : ', querySnapshot.size);
+                  querySnapshot.forEach(async docs => {
+                    const hospitalemail = docs.get('ownemail');
+                    const coll = collection(db, 'Profile');
+                    const q = query(
+                      coll,
+                      where('ownemail', '==', hospitalemail),
+                      where('cityl', '==', city),
+                      where('role', '==', 'doctor'),
+                      // where('doctortypelabel', '==', cat),
+                    );
+
+                    const unSubscribe = onSnapshot(q, snapshot => {
+                      setGetData2(
+                        snapshot.docs.map(doc => ({
+                          selecteduser: doc.data(),
+                        })),
+                      );
+                    });
+                    return () => {
+                      unSubscribe();
+                      setcat('');
+                    };
+                  });
+                } else {
+                  setloading(false);
+                  showToast(
+                    'error',
+                    'Error',
+                    'Please Select Valid Role',
+                    true,
+                    3000,
+                  );
+                }
+              } catch (error) {
+                setloading(false);
+                console.error('Error fetching data: ', error);
+              }
+            };
+
+            fetchData(city);
+          } else {
+            const coll = collection(db, 'Profile');
+            const q = query(
+              coll,
+              where('cityl', '==', city),
+              where('role', '==', 'doctor'),
+              where('ownemail', '==', email),
+            );
+
+            const unSubscribe = onSnapshot(q, snapshot => {
+              setGetData2(
+                snapshot.docs.map(doc => ({
+                  selecteduser: doc.data(),
+                })),
+              );
+            });
+            return () => {
+              unSubscribe();
+            };
+          }
+        });
       });
-      return () => {
-        unSubscribe();
-      };
     });
-  });
   }, []);
 
   useEffect(() => {
     AsyncStorage.getItem('email').then(email => {
       AsyncStorage.getItem('city').then(city => {
-        const tophospitals = async (city) => {
+        const tophospitals = async city => {
           const coll = collection(db, 'Profile');
           const q = query(
             coll,
@@ -253,6 +314,73 @@ const Cbids = ({navigation}) => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+          </View>
+
+          <View
+            style={tw` flex-row items-center justify-around border-black h-15 w-85 self-center rounded-md  mb-5`}>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.facebook.com/share/m7EVAAkPpTRA3oin/',
+                );
+              }}>
+              <View style={tw`h-12 w-12 rounded-full `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://image.similarpng.com/very-thumbnail/2020/04/Popular-Logo-facebook-icon-png.png',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.tiktok.com/@edoctor.pk?_t=8qva7vILKRL&_r=1',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTENULhSShQ0xJs4pnke7F-o27Ozd0iyUA6tw&s',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.instagram.com/edoctorpk/profilecard/?igsh=Z3FjaDFnOTJobDFj',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://png.pngtree.com/png-clipart/20190613/original/pngtree-instagram-icon-logo-png-image_3560506.jpg',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://youtube.com/@edoctorcom?si=QvbxJyEm2bqwXRbl',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://png.pngtree.com/element_our/sm/20180506/sm_5aeee59357bbb.png',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
           </View>
         </>
       ) : (

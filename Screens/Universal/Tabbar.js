@@ -240,6 +240,7 @@ function Tabbar() {
                   profile:
                     'https://firebasestorage.googleapis.com/v0/b/supplysync-3e4b1.appspot.com/o/allfiles%2Fimages.jpg?alt=media&token=0aa9155e-5ebd-4b22-8f77-c9d70d280507',
                   profilestatus: '',
+                  doctoredu : ''
                 });
               },
             })}

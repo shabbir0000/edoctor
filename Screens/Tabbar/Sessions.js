@@ -65,6 +65,7 @@ const Sessions = ({navigation, route}) => {
     labell2,
     // labell3,
     profilestatus,
+    doctoredu
   } = route.params;
 
   console.log('doc type :', doctortype);
@@ -77,6 +78,7 @@ const Sessions = ({navigation, route}) => {
     doctorcity: '',
     doctorfee: '',
     doctorexp: '',
+    doctoredu : ''
   });
 
   const [loading, setloading] = useState(false);
@@ -328,6 +330,7 @@ const Sessions = ({navigation, route}) => {
       doctorcity: doctorcity,
       doctorfee: doctorfee,
       doctorexp: doctorexp,
+      doctoredu : doctoredu
     });
     setmonday(mondayy);
     settuesday(tuesdayy);
@@ -354,6 +357,7 @@ const Sessions = ({navigation, route}) => {
         doctorcity: '',
         doctorfee: '',
         doctorexp: '',
+        doctoredu : ''
       });
       setmonday(false);
       settuesday(false);
@@ -439,6 +443,7 @@ const Sessions = ({navigation, route}) => {
   // };
 
 
+
   const calculateSessionSlots = (startTime, endTime, sessionDuration) => {
     const convertTo24HourFormat = time => {
       const [timePart, modifier] = time.split(' ');
@@ -491,6 +496,7 @@ const Sessions = ({navigation, route}) => {
     doctorcity,
     doctorfee,
     doctorexp,
+    doctoredu
   ) => {
     console.log(
       'data :',
@@ -506,6 +512,7 @@ const Sessions = ({navigation, route}) => {
       !doctorphone ||
       !doctoremail ||
       !doctorpassword ||
+      !doctoredu ||
       //   !doctorcity ||
       !value ||
       !value1 ||
@@ -527,6 +534,7 @@ const Sessions = ({navigation, route}) => {
         doctorcity,
         doctorfee,
         doctorexp,
+        doctoredu,
         url,
       );
     }
@@ -540,6 +548,7 @@ const Sessions = ({navigation, route}) => {
     doctorcity,
     doctorfee,
     doctorexp,
+    doctoredu,
     url,
   ) => {
     if (
@@ -576,6 +585,7 @@ const Sessions = ({navigation, route}) => {
             hospitalphone: GetData1[0].selecteduser.phone,
             hospitaladdress: GetData1[0].selecteduser.address,
             password: doctorpassword,
+            doctoredu : doctoredu,
             ownemail: user,
             doctortype: value2,
             doctortypelabel: label2.toLowerCase(),
@@ -586,6 +596,15 @@ const Sessions = ({navigation, route}) => {
             friday: friday,
             saturday: saturday,
             sunday: sunday,
+            days : [
+              monday ? "1" : "0",
+              tuesday ? "2" : "0",
+              wednesday ? "3" : "0",
+              thursday ? "4" : "0",
+              friday ? "5" : "0",
+              saturday ? "6" : "0",
+              sunday ? "7" : "0",
+            ],
             doctortimefrom: value,
             doctortimefromlabel: label,
             doctortimeto: value1,
@@ -611,6 +630,7 @@ const Sessions = ({navigation, route}) => {
                 hospitalphone: GetData1[0].selecteduser.phone,
                 hospitaladdress: GetData1[0].selecteduser.address,
                 password: doctorpassword,
+                doctoredu : doctoredu,
                 ownemail: user,
                 doctortype: value2,
                 doctortypelabel: label2.toLowerCase(),
@@ -621,6 +641,15 @@ const Sessions = ({navigation, route}) => {
                 friday: friday,
                 saturday: saturday,
                 sunday: sunday,
+                days : [
+                  monday ? "1" : "0",
+                  tuesday ? "2" : "0",
+                  wednesday ? "3" : "0",
+                  thursday ? "4" : "0",
+                  friday ? "5" : "0",
+                  saturday ? "6" : "0",
+                  sunday ? "7" : "0",
+                ],
                 doctortimefrom: value,
                 doctortimefromlabel: label,
                 doctortimeto: value1,
@@ -676,6 +705,7 @@ const Sessions = ({navigation, route}) => {
     doctorcity,
     doctorfee,
     doctorexp,
+    doctoredu
   ) => {
     if (filedata1.startsWith('file://') || filedata1.startsWith('content://')) {
       // showModal;
@@ -692,6 +722,7 @@ const Sessions = ({navigation, route}) => {
         doctorcity,
         doctorfee,
         doctorexp,
+        doctoredu,
         url,
       );
     } else {
@@ -705,6 +736,7 @@ const Sessions = ({navigation, route}) => {
           doctorcity,
           doctorfee,
           doctorexp,
+          doctoredu,
           filedata1,
         );
       } catch (error) {
@@ -722,6 +754,7 @@ const Sessions = ({navigation, route}) => {
     doctorcity,
     doctorfee,
     doctorexp,
+    doctoredu,
     url,
   ) => {
     const slots = calculateSessionSlots(label, label1, 20);
@@ -738,6 +771,7 @@ const Sessions = ({navigation, route}) => {
       hospitalphone: GetData1[0].selecteduser.phone,
       hospitaladdress: GetData1[0].selecteduser.address,
       password: doctorpassword,
+      doctoredu : doctoredu,
       ownemail: user,
       doctortype: value2,
       doctortypelabel: label2.toLowerCase(),
@@ -749,6 +783,15 @@ const Sessions = ({navigation, route}) => {
       friday: friday,
       saturday: saturday,
       sunday: sunday,
+      days : [
+        monday ? "1" : "0",
+        tuesday ? "2" : "0",
+        wednesday ? "3" : "0",
+        thursday ? "4" : "0",
+        friday ? "5" : "0",
+        saturday ? "6" : "0",
+        sunday ? "7" : "0",
+      ],
       doctortimefrom: value,
       doctortimefromlabel: label,
       doctortimeto: value1,
@@ -962,6 +1005,8 @@ const Sessions = ({navigation, route}) => {
                           values.doctorcity,
                           values.doctorfee,
                           values.doctorexp,
+                          values.doctoredu
+
                         );
                       } else {
                         uploaddocfile(
@@ -972,6 +1017,7 @@ const Sessions = ({navigation, route}) => {
                           values.doctorcity,
                           values.doctorfee,
                           values.doctorexp,
+                          values.doctoredu
                         );
                       }
                       // resetForm({})
@@ -989,7 +1035,7 @@ const Sessions = ({navigation, route}) => {
                         <ScrollView
                           vertical
                           showsVerticalScrollIndicator={true}>
-                          <View style={tw`h-${docid ? '270' : '285'}`}>
+                          <View style={tw`h-${docid ? '280' : '295'}`}>
                             <Screensheader
                               name={'ADD DOCTOR'}
                               left={15}
@@ -1119,6 +1165,19 @@ const Sessions = ({navigation, route}) => {
                                   value={values.doctorexp}
                                   error={
                                     touched.doctorexp ? errors.doctorexp : false
+                                  }
+                                />
+                              </View>
+
+                              <View style={tw`top-5`}>
+                                <Input1
+                                  edit={true}
+                                  placeholder={'Enter The Doctor Education'}
+                                  onchangetext={handleChange('doctoredu')}
+                                  onblur={handleBlur('doctoredu')}
+                                  value={values.doctoredu}
+                                  error={
+                                    touched.doctoredu ? errors.doctoredu : false
                                   }
                                 />
                               </View>

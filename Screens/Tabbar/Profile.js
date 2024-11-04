@@ -17,23 +17,27 @@ import {AppContext} from '../../AppContext';
 
 const Profile = ({navigation}) => {
   const [GetData, setGetData] = useState([]);
+  const [role, setrole] = useState('');
   const {setcity} = useContext(AppContext);
 
   useEffect(() => {
     AsyncStorage.getItem('email').then(email => {
-      const coll = collection(db, 'Profile');
-      const q = query(coll, where('email', '==', email));
+      AsyncStorage.getItem('role').then(role => {
+        setrole(role);
+        const coll = collection(db, 'Profile');
+        const q = query(coll, where('email', '==', email));
 
-      const unSubscribe = onSnapshot(q, snapshot => {
-        setGetData(
-          snapshot.docs.map(doc => ({
-            selecteduser: doc.data(),
-          })),
-        );
+        const unSubscribe = onSnapshot(q, snapshot => {
+          setGetData(
+            snapshot.docs.map(doc => ({
+              selecteduser: doc.data(),
+            })),
+          );
+        });
+        return () => {
+          unSubscribe();
+        };
       });
-      return () => {
-        unSubscribe();
-      };
     });
   }, []);
 
@@ -152,75 +156,76 @@ const Profile = ({navigation}) => {
             }}
           />
         </View>
+        {role === 'user' ? (
+          <></>
+        ) : (
+          <View
+            style={tw` flex-row items-center justify-around border-black h-15 w-85 self-center rounded-md mt-5`}>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.facebook.com/share/m7EVAAkPpTRA3oin/',
+                );
+              }}>
+              <View style={tw`h-12 w-12 rounded-full `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://image.similarpng.com/very-thumbnail/2020/04/Popular-Logo-facebook-icon-png.png',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
 
-        <View
-          style={tw` flex-row items-center justify-around border-black h-15 w-85 self-center rounded-md mt-5`}>
-          
-          <TouchableOpacity
-          onPress={()=>{
-             Linking.openURL("https://www.facebook.com/share/m7EVAAkPpTRA3oin/");
-          }}
-          >
-            <View style={tw`h-12 w-12 rounded-full `}>
-              <Image
-                style={tw`h-12 w-12 rounded-full`}
-                source={{
-                  uri: 'https://image.similarpng.com/very-thumbnail/2020/04/Popular-Logo-facebook-icon-png.png',
-                }}
-              />
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.tiktok.com/@edoctor.pk?_t=8qva7vILKRL&_r=1',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTENULhSShQ0xJs4pnke7F-o27Ozd0iyUA6tw&s',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
 
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://www.instagram.com/edoctorpk/profilecard/?igsh=Z3FjaDFnOTJobDFj',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://png.pngtree.com/png-clipart/20190613/original/pngtree-instagram-icon-logo-png-image_3560506.jpg',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-          onPress={()=>{
-            Linking.openURL("https://www.tiktok.com/@edoctor.pk?_t=8qva7vILKRL&_r=1");
-         }}
-          >
-            <View style={tw`h-12 w-12 `}>
-              <Image
-                style={tw`h-12 w-12 rounded-full`}
-                source={{
-                  uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTENULhSShQ0xJs4pnke7F-o27Ozd0iyUA6tw&s',
-                }}
-              />
-            </View>
-          </TouchableOpacity>
-
-
-          <TouchableOpacity 
-           onPress={()=>{
-            Linking.openURL("https://www.instagram.com/edoctorpk/profilecard/?igsh=Z3FjaDFnOTJobDFj");
-         }}
-          >
-            <View style={tw`h-12 w-12 `}>
-              <Image
-                style={tw`h-12 w-12 rounded-full`}
-                source={{
-                  uri: 'https://png.pngtree.com/png-clipart/20190613/original/pngtree-instagram-icon-logo-png-image_3560506.jpg',
-                }}
-              />
-            </View>
-          </TouchableOpacity>
-
-
-          <TouchableOpacity 
-           onPress={()=>{
-            Linking.openURL("https://youtube.com/@edoctorcom?si=QvbxJyEm2bqwXRbl");
-         }}
-          >
-            <View style={tw`h-12 w-12 `}>
-              <Image
-                style={tw`h-12 w-12 rounded-full`}
-                source={{
-                  uri: 'https://png.pngtree.com/element_our/sm/20180506/sm_5aeee59357bbb.png',
-                }}
-              />
-            </View>
-          </TouchableOpacity>
-
-
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  'https://youtube.com/@edoctorcom?si=QvbxJyEm2bqwXRbl',
+                );
+              }}>
+              <View style={tw`h-12 w-12 `}>
+                <Image
+                  style={tw`h-12 w-12 rounded-full`}
+                  source={{
+                    uri: 'https://png.pngtree.com/element_our/sm/20180506/sm_5aeee59357bbb.png',
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       <Toast />

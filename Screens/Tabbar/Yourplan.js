@@ -795,7 +795,7 @@ const Yourplan = ({navigation, route}) => {
                                 sundayy: data.selecteduser.sunday,
                                 docid: data.selecteduser.userid,
                                 doctortimefrom:
-                                  data.selecteduser.doctortimefrom,
+                                data.selecteduser.doctortimefrom,
                                 doctortimeto: data.selecteduser.doctortimeto,
                                 profile: data.selecteduser.profilephoto,
                                 labell: data.selecteduser.doctortimefromlabel,
@@ -803,6 +803,7 @@ const Yourplan = ({navigation, route}) => {
                                 labell2: data.selecteduser.doctortypelabel,
                                 // labell3: data.selecteduser.cityl,
                                 profilestatus: data.selecteduser.profilestatus,
+                                doctoredu : data.selecteduser.doctoredu
                               });
                             }}>
                             <Image
